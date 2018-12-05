@@ -1,6 +1,7 @@
 package quadruplebranching;
 
 public class Line {
+	
 	public double x1, y1;
 	public double x2, y2;
 	
@@ -12,6 +13,6 @@ public class Line {
 	}
 	
 	public String svgDataValue () {
-		return "<line x1=\"" + x1 + "\" y1=\"" + y1 + "\" x2=\"" + x2 + "\" y2=\"" + y2 + "\" />";
+		return "<line stroke=\"black\" stroke-width=\"0.005\" x1=\"" + (x1 + 128) + "\" y1=\"" + (y1 + 128) + "\" x2=\"" + (x2 + 128) + "\" y2=\"" + (y2 + 128) + "\" />";
 	}
 }
