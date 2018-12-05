@@ -1,5 +1,7 @@
 package quadruplebranching;
 
+import java.util.ArrayList;
+
 public class QuadrupleBranchingFractal {
 
 	public static void main(String[] args) {
@@ -7,7 +9,10 @@ public class QuadrupleBranchingFractal {
 	}
 
 	public void write () {
-		
+		String output = "";
+		for (Line line : upLines) {
+			
+		}
 	}
 	
 	public void baseGenerate () {
@@ -30,5 +35,8 @@ public class QuadrupleBranchingFractal {
 		
 	}
 	
-	ArrayList<>
+	ArrayList<Line> upLines = new ArrayList<Line> ();
+	ArrayList<Line> downLines = new ArrayList<Line> ();
+	ArrayList<Line> rightLines = new ArrayList<Line> ();
+	ArrayList<Line> leftLines = new ArrayList<Line> ();
 }

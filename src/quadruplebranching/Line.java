@@ -10,4 +10,8 @@ public class Line {
 		this.x2 = x2;
 		this.y2 = y2;
 	}
+	
+	public String svgDataValue () {
+		return "<line x1=\"" + x1 + "\" y1=\"" + y1 + "\" x2=\"" + x2 + "\" y2=\"" + y2 + "\" />";
+	}
 }
