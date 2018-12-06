@@ -13,7 +13,7 @@ import java.util.Vector;
 public class QuadrupleBranchingFractal {
 	
 	public static void main(String[] args) {
-		QuadrupleBranchingFractal f = new QuadrupleBranchingFractal (18, 0.75d);
+		QuadrupleBranchingFractal f = new QuadrupleBranchingFractal (12, 0.5d);
 		f.begin ();
 	}
 
