@@ -13,6 +13,6 @@ public class Line {
 	}
 	
 	public String svgDataValue () {
-		return "<line stroke=\"black\" stroke-width=\"0.005\" x1=\"" + (x1 + 128) + "\" y1=\"" + (y1 + 128) + "\" x2=\"" + (x2 + 128) + "\" y2=\"" + (y2 + 128) + "\" />";
+		return "M " + x1 + "," + y1 + "\nL " + x2 + "," + y2;
 	}
 }

@@ -4,16 +4,24 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Vector;
 
 public class QuadrupleBranchingFractal {
-
+	
 	public static void main(String[] args) {
-		QuadrupleBranchingFractal f = new QuadrupleBranchingFractal (20, 0.5d);
+		QuadrupleBranchingFractal f = new QuadrupleBranchingFractal (18, 0.75d);
 		f.begin ();
 	}
 
+	public QuadrupleBranchingFractal (int rd, double rf) {
+		recursionDepth = rd;
+		reductionFactor = rf;
+	}
+	
 	public void begin() {
 		baseGenerate ();
 		System.out.println("We did it! We escaped the return chain.");
@@ -25,27 +33,35 @@ public class QuadrupleBranchingFractal {
 	int recursionDepth;
 	double reductionFactor;
 	
-	public QuadrupleBranchingFractal (int rd, double rf) {
-		recursionDepth = rd;
-		reductionFactor = rf;
-	}
-	
 	public void write () {
-		String output = "<svg width=\"256\" height=\"256\">";
-		for (Line line : verticalLines) {
-			if (line != null)
-				output += "\n\t" + line.svgDataValue();
-		}
-		for (Line line : horizontalLines) {
-			if (line != null)
-				output += "\n\t" + line.svgDataValue();
-		}
-		output += "\n</svg>";
-		System.out.println(output);
 		try {
-			BufferedWriter b = new BufferedWriter (new FileWriter ("\\\\hampton.local\\stuhome$\\15CostenJa\\Documents\\Test.svg"));
-			b.write(output);
-			b.close();
+			PrintStream fStream = new PrintStream ("Test.svg");
+			File f = new File ("Test.svg");
+			System.out.println(f.getAbsolutePath());
+			fStream.println("<svg viewBox=\"0 0 8192 8192\">");
+			
+			fStream.print("<path fill=\"none\" stroke=\"black\" stroke-width=\"0.01\" d=\"");
+			long numItems = 0;
+			for (Line line : verticalLines) {
+				if (line != null) {
+					fStream.print ("\n" + line.svgDataValue());
+					numItems++;
+				}
+			}
+			fStream.println ("\" />");
+			
+			fStream.print("<path fill=\"none\" stroke=\"black\" stroke-width=\"0.01\" d=\"");
+			for (Line line : horizontalLines) {
+				if (line != null) {
+					fStream.print ("\n" + line.svgDataValue());
+					numItems++;
+				}
+			}
+			fStream.println ("\" />");
+			
+			fStream.println ("</svg>");
+			fStream.close();
+			System.out.println(numItems);
 		} catch (IOException e) {
 			System.out.println("Write error!");
 			e.printStackTrace();
@@ -53,12 +69,13 @@ public class QuadrupleBranchingFractal {
 	}
 	
 	public void baseGenerate () {
-		double lineLength = 128;
-		verticalLines.add(new Line (0, 0, 0, 128));
-		verticalLines.add(new Line (0, 0, 0, -128));
-		horizontalLines.add(new Line (0, 0, 128, 0));
-		horizontalLines.add(new Line (0, 0, -128, 0));
+		double lineLength = 4096;
+		verticalLines.add(new Line (0, -4096, 0, 4096));
+		//verticalLines.add(new Line (0, 0, 0, -128));
+		horizontalLines.add(new Line (-4096, 0, 4096, 0));
+		//horizontalLines.add(new Line (0, 0, -128, 0));
 		double newLineLength = lineLength*reductionFactor;
+		
 		
 		Thread t1 = new Thread (new Runnable () {
 			@Override
@@ -102,8 +119,8 @@ public class QuadrupleBranchingFractal {
 	public void verticalGenerate (double xOrigin, double yOrigin, int currentDepth, double lineLength) {
 		currentDepth++;
 		
-		horizontalLines.add(new Line (xOrigin, yOrigin, xOrigin + lineLength, yOrigin));
-		horizontalLines.add(new Line (xOrigin, yOrigin, xOrigin - lineLength, yOrigin));
+		horizontalLines.add(new Line (xOrigin - lineLength, yOrigin, xOrigin + lineLength, yOrigin));
+		//horizontalLines.add(new Line (xOrigin, yOrigin, xOrigin - lineLength, yOrigin));
 		double newLineLength = lineLength*reductionFactor;
 		
 		if (currentDepth < recursionDepth) {
@@ -115,8 +132,8 @@ public class QuadrupleBranchingFractal {
 	public void horizontalGenerate (double xOrigin, double yOrigin, int currentDepth, double lineLength) {
 		currentDepth++;
 		
-		verticalLines.add(new Line (xOrigin, yOrigin, xOrigin, yOrigin + lineLength));
-		verticalLines.add(new Line (xOrigin, yOrigin, xOrigin, yOrigin - lineLength));
+		verticalLines.add(new Line (xOrigin, yOrigin - lineLength, xOrigin, yOrigin + lineLength));
+		//verticalLines.add(new Line (xOrigin, yOrigin, xOrigin, yOrigin - lineLength));
 		double newLineLength = lineLength*reductionFactor;
 		
 		if (currentDepth < recursionDepth) {
@@ -125,6 +142,6 @@ public class QuadrupleBranchingFractal {
 		}
 	}
 	
-	ArrayList<Line> verticalLines = new ArrayList<Line> ();
-	ArrayList<Line> horizontalLines = new ArrayList<Line> ();
+	Vector<Line> verticalLines = new Vector<Line> ();
+	Vector<Line> horizontalLines = new Vector<Line> ();
 }
