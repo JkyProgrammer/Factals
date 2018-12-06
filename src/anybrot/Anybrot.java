@@ -1,4 +1,4 @@
-package setgenerator;
+package anybrot;
 
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -13,7 +13,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-public class SetGeneratorFractal {
+public class Anybrot {
 
 	public int runSet (Complex c, int maxIterations) {
 		Complex z = c;
@@ -27,7 +27,7 @@ public class SetGeneratorFractal {
 	public static void main(String[] args) {
 		float xPos = 0.0f;
 		float yPos = 0.7f;
-		SetGeneratorFractal sgf = new SetGeneratorFractal (2048, 64, xPos, yPos, 0.1f);
+		Anybrot sgf = new Anybrot (2048, 64, xPos, yPos, 0.1f);
 		sgf.prepare();
 		sgf.calculate();
 		try {
@@ -45,7 +45,7 @@ public class SetGeneratorFractal {
 		System.out.println("Zooming finished.");
 	}
 	
-	public SetGeneratorFractal (int imageSizee, int maxIterationss, float xPoss, float yPoss, float zoomm) {
+	public Anybrot (int imageSizee, int maxIterationss, float xPoss, float yPoss, float zoomm) {
 		this.imageSize = imageSizee;
 		this.maxIterations = maxIterationss;
 		this.xPos = xPoss;
@@ -146,7 +146,6 @@ public class SetGeneratorFractal {
 		
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].getName().length() > 10) {
-				System.out.println(listOfFiles[i].getName().substring(0, 11));
 				if (listOfFiles[i].getName().substring(0, 11).equals("Mandelbrot-")) {
 					int n = Integer.parseInt(listOfFiles[i].getName().substring(11, 12));
 					if (n > num) num = n;

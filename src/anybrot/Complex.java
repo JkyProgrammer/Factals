@@ -1,4 +1,4 @@
-package setgenerator;
+package anybrot;
 
 /******************************************************************************
  *  Compilation:  javac Complex.java
