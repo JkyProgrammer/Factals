@@ -22,7 +22,7 @@ public class SetGeneratorFractal {
 	public void start () {
 		frame.setSize(400, 400);
 		
-		Picture p = new Picture ()
+		BufferedImage i = new BufferedImage (4096, 4096, 
 	}
 	
 }
