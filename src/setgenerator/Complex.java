@@ -83,6 +83,15 @@ public class Complex {
         return new Complex(real, imag);
     }
 
+    public Complex power (int pow) {
+    	Complex a = this;
+    	Complex start = this;
+    	for (int i = 0; i < pow; i++) {
+    		a = a.times(start);
+    	}
+    	return a;
+    }
+    
     // return a new object whose value is (this * alpha)
     public Complex scale(double alpha) {
         return new Complex(alpha * re, alpha * im);

@@ -1,8 +1,11 @@
 package setgenerator;
 
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -16,15 +19,15 @@ public class SetGeneratorFractal {
 		Complex z = c;
 		for (int its = 0; its < maxIterations; its++) {
 			if (z.abs() > 2.0) return its;
-			z = z.times(z).plus(c);
+			z = z.power(power-1).plus(c);
 		}
 		return maxIterations;
 	}
 	
 	public static void main(String[] args) {
 		float xPos = 0.0f;
-		float yPos = 0.6f;
-		SetGeneratorFractal sgf = new SetGeneratorFractal (1024, 64, xPos, yPos, 0.1f);
+		float yPos = 0.7f;
+		SetGeneratorFractal sgf = new SetGeneratorFractal (2048, 64, xPos, yPos, 0.1f);
 		sgf.prepare();
 		sgf.calculate();
 		try {
@@ -33,21 +36,90 @@ public class SetGeneratorFractal {
 			e.printStackTrace();
 		}
 		
-		for (float f = 0.5f; f < 3.0; f+= 0.5) {
-			System.out.println("Beginning analysis of zoom value " + f + ", at position: " + xPos + ", " + yPos);
-			sgf.setZoom(f);
-			sgf.calculate();
-		}
+//		for (float f = 0.5f; f < 3.0; f+= 0.5) {
+//			System.out.println("Beginning analysis of zoom value " + f + ", at position: " + xPos + ", " + yPos);
+//			sgf.setZoom(f);
+//			sgf.calculate();
+//		}
 		
 		System.out.println("Zooming finished.");
 	}
 	
-	public SetGeneratorFractal (int imageSize, int maxIterations, float xPos, float yPos, float zoom) {
-		this.imageSize = imageSize;
-		this.maxIterations = maxIterations;
-		this.xPos = xPos;
-		this.yPos = yPos;
-		this.zoom = zoom;
+	public SetGeneratorFractal (int imageSizee, int maxIterationss, float xPoss, float yPoss, float zoomm) {
+		this.imageSize = imageSizee;
+		this.maxIterations = maxIterationss;
+		this.xPos = xPoss;
+		this.yPos = yPoss;
+		this.zoom = zoomm;
+		
+		JFrame controlFrame = new JFrame ("Control Frame");
+		controlFrame.setLayout(new GridLayout (8, 1));
+		
+		JLabel l1 = new JLabel ("Zoom value");
+		JTextField tf1 = new JTextField ();
+		tf1.setText("" + zoom);
+		JLabel l2 = new JLabel ("Iteration depth limit");
+		JTextField tf2 = new JTextField ();
+		tf2.setText("" + maxIterations);
+		JLabel l3 = new JLabel ("Position");
+		
+		JTextField xField = new JTextField ();
+		xField.setText("" + xPos);
+		
+		JTextField yField = new JTextField ();
+		yField.setText("" + yPos);
+		
+		JPanel pan = new JPanel ();
+		pan.setLayout(new GridLayout (1, 2));
+		pan.add(xField);
+		pan.add(yField);
+		
+		JTextField powerField = new JTextField ();
+		powerField.setText("" + power);
+		
+		JButton b1 = new JButton ("Redraw image");
+		b1.addActionListener (new ActionListener () {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					zoom = Float.parseFloat(tf1.getText());
+					maxIterations = Integer.parseInt(tf2.getText());
+					xPos = Float.parseFloat(xField.getText());
+					yPos = Float.parseFloat(yField.getText());
+					power = Integer.parseInt(powerField.getText());
+					Thread t = new Thread (new Runnable () {
+						@Override
+						public void run() {
+							calculate ();
+						}
+					});
+					t.start();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		
+		JButton b2 = new JButton ("Save Image");
+		b2.addActionListener (new ActionListener () {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				save ();
+			}
+		});
+		
+		controlFrame.add(l1);
+		controlFrame.add(tf1);
+		controlFrame.add(l2);
+		controlFrame.add(tf2);
+		controlFrame.add(l3);
+		controlFrame.add(pan);
+		controlFrame.add(powerField);
+		controlFrame.add(b1);
+		controlFrame.add(b2);
+		
+		controlFrame.setSize(200, 300);
+		controlFrame.setVisible(true);
 	}
 	
 	private int imageSize;
@@ -55,9 +127,40 @@ public class SetGeneratorFractal {
 	private float xPos;
 	private float yPos;
 	private float zoom;
+	private int power = 2;
+	
+	public void setPosition (float newXPos, float newYPos) {
+		xPos = newXPos;
+		yPos = newYPos;
+	}
 	
 	public void setZoom (float newZoom) {
 		zoom = newZoom;
+	}
+	
+	public void save () {
+		
+		File folder = new File(".");
+		File[] listOfFiles = folder.listFiles();
+		int num = 0;
+		
+		for (int i = 0; i < listOfFiles.length; i++) {
+			if (listOfFiles[i].getName().length() > 10) {
+				System.out.println(listOfFiles[i].getName().substring(0, 11));
+				if (listOfFiles[i].getName().substring(0, 11).equals("Mandelbrot-")) {
+					int n = Integer.parseInt(listOfFiles[i].getName().substring(11, 12));
+					if (n > num) num = n;
+				}
+			}
+		}
+		
+		num++;
+		try {
+			File outputfile = new File("Mandelbrot-" + num + ".png");
+		    ImageIO.write(i, "png", outputfile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private BufferedImage i;
@@ -67,7 +170,9 @@ public class SetGeneratorFractal {
 		xValue -= imageSize/2;
 		
 		xValue /= ((float)imageSize);
+		
 		xValue /= zoom;
+		xValue -= xPos;
 		
 		double yValue = (float)(yLoc);
 		yValue -= imageSize/2;
@@ -162,13 +267,6 @@ public class SetGeneratorFractal {
 		
 		
 		System.out.println("Calculations done.");
-		
-		try {
-			File outputfile = new File("Mandelbrot.png");
-		    ImageIO.write(i, "png", outputfile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 }
