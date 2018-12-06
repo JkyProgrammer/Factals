@@ -13,7 +13,7 @@ import javax.swing.*;
 public class SetGeneratorFractal {
 
 	public int runSet (Complex c, int maxIterations) {
-		Complex z = new Complex (0d,0d);
+		Complex z = c;
 		for (int its = 0; its < maxIterations; its++) {
 			if (z.abs() > 2.0) return its;
 			z = z.times(z).plus(c);
