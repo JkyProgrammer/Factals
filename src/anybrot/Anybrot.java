@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import org.apache.commons.math3.complex.*;
 
 public class Anybrot {
 
@@ -19,15 +20,16 @@ public class Anybrot {
 		Complex z = c;
 		for (int its = 0; its < maxIterations; its++) {
 			if (z.abs() > 2.0) return its;
-			z = z.power(power-1).plus(c);
+			Complex tmp = z.pow(power-1);
+			z = z.pow(power).subtract(tmp).add(c);
 		}
 		return maxIterations;
 	}
 	
 	public static void main(String[] args) {
 		float xPos = 0.0f;
-		float yPos = 0.7f;
-		Anybrot sgf = new Anybrot (512, 64, xPos, yPos, 0.1f, true);
+		float yPos = 0.0f;
+		Anybrot sgf = new Anybrot (1024, 64, xPos, yPos, 0.2f, true);
 		sgf.prepare();
 		sgf.calculate();
 		try {
@@ -36,10 +38,11 @@ public class Anybrot {
 			e.printStackTrace();
 		}
 		
-//		for (float f = 0.5f; f < 3.0; f+= 0.5) {
-//			System.out.println("Beginning analysis of zoom value " + f + ", at position: " + xPos + ", " + yPos);
-//			sgf.setZoom(f);
+//		for (float p = -2.0f; p <= 2.0; p += 0.1) {
+//			System.out.println("Beginning analysis of power value " + p + ", at position: " + xPos + ", " + yPos);
+//			sgf.setPower (p);
 //			sgf.calculate();
+//			sgf.save("Power " + p);
 //		}
 		
 		System.out.println("Zooming finished.");
@@ -88,7 +91,7 @@ public class Anybrot {
 						maxIterations = Integer.parseInt(tf2.getText());
 						xPos = Float.parseFloat(xField.getText());
 						yPos = Float.parseFloat(yField.getText());
-						power = Integer.parseInt(powerField.getText());
+						power = Float.parseFloat(powerField.getText());
 						Thread t = new Thread (new Runnable () {
 							@Override
 							public void run() {
@@ -143,14 +146,21 @@ public class Anybrot {
 		zoom = newZoom;
 	}
 	
-	public void save () {
-		
+	public void setPower (float newPower) {
+		power = newPower;
+	}
+	
+	public void save (String name) {
 		try {
-			File outputfile = new File("Mandelbrot-" + maxIterations + "-" + xPos + ":" + yPos + "-" + power + "-" + zoom + ".png");
+			File outputfile = new File(name + ".png");
 		    ImageIO.write(i, "png", outputfile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void save () {
+		save ("Mandelbrot-" + maxIterations + "-" + xPos + ":" + yPos + "-" + power + "-" + zoom);
 	}
 	
 	private void processPixel (int xLoc, int yLoc) {
