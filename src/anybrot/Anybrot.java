@@ -27,7 +27,7 @@ public class Anybrot {
 	public static void main(String[] args) {
 		float xPos = 0.0f;
 		float yPos = 0.7f;
-		Anybrot sgf = new Anybrot (2048, 64, xPos, yPos, 0.1f);
+		Anybrot sgf = new Anybrot (2048, 64, xPos, yPos, 0.1f, true);
 		sgf.prepare();
 		sgf.calculate();
 		try {
@@ -45,81 +45,84 @@ public class Anybrot {
 		System.out.println("Zooming finished.");
 	}
 	
-	public Anybrot (int imageSizee, int maxIterationss, float xPoss, float yPoss, float zoomm) {
+	public Anybrot (int imageSizee, int maxIterationss, float xPoss, float yPoss, float zoomm, boolean shouldBeVisuall) {
 		this.imageSize = imageSizee;
 		this.maxIterations = maxIterationss;
 		this.xPos = xPoss;
 		this.yPos = yPoss;
 		this.zoom = zoomm;
+		this.shouldBeVisual = shouldBeVisuall;
 		
-		JFrame controlFrame = new JFrame ("Control Frame");
-		controlFrame.setLayout(new GridLayout (8, 1));
-		
-		JLabel l1 = new JLabel ("Zoom value");
-		JTextField tf1 = new JTextField ();
-		tf1.setText("" + zoom);
-		JLabel l2 = new JLabel ("Iteration depth limit");
-		JTextField tf2 = new JTextField ();
-		tf2.setText("" + maxIterations);
-		JLabel l3 = new JLabel ("Position");
-		
-		JTextField xField = new JTextField ();
-		xField.setText("" + xPos);
-		
-		JTextField yField = new JTextField ();
-		yField.setText("" + yPos);
-		
-		JPanel pan = new JPanel ();
-		pan.setLayout(new GridLayout (1, 2));
-		pan.add(xField);
-		pan.add(yField);
-		
-		JTextField powerField = new JTextField ();
-		powerField.setText("" + power);
-		
-		JButton b1 = new JButton ("Redraw image");
-		b1.addActionListener (new ActionListener () {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					zoom = Float.parseFloat(tf1.getText());
-					maxIterations = Integer.parseInt(tf2.getText());
-					xPos = Float.parseFloat(xField.getText());
-					yPos = Float.parseFloat(yField.getText());
-					power = Integer.parseInt(powerField.getText());
-					Thread t = new Thread (new Runnable () {
-						@Override
-						public void run() {
-							calculate ();
-						}
-					});
-					t.start();
-				} catch (Exception e1) {
-					e1.printStackTrace();
+		if (shouldBeVisual) {
+			JFrame controlFrame = new JFrame ("Control Frame");
+			controlFrame.setLayout(new GridLayout (8, 1));
+			
+			JLabel l1 = new JLabel ("Zoom value");
+			JTextField tf1 = new JTextField ();
+			tf1.setText("" + zoom);
+			JLabel l2 = new JLabel ("Iteration depth limit");
+			JTextField tf2 = new JTextField ();
+			tf2.setText("" + maxIterations);
+			JLabel l3 = new JLabel ("Position");
+			
+			JTextField xField = new JTextField ();
+			xField.setText("" + xPos);
+			
+			JTextField yField = new JTextField ();
+			yField.setText("" + yPos);
+			
+			JPanel pan = new JPanel ();
+			pan.setLayout(new GridLayout (1, 2));
+			pan.add(xField);
+			pan.add(yField);
+			
+			JTextField powerField = new JTextField ();
+			powerField.setText("" + power);
+			
+			JButton b1 = new JButton ("Redraw image");
+			b1.addActionListener (new ActionListener () {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						zoom = Float.parseFloat(tf1.getText());
+						maxIterations = Integer.parseInt(tf2.getText());
+						xPos = Float.parseFloat(xField.getText());
+						yPos = Float.parseFloat(yField.getText());
+						power = Integer.parseInt(powerField.getText());
+						Thread t = new Thread (new Runnable () {
+							@Override
+							public void run() {
+								calculate ();
+							}
+						});
+						t.start();
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
 				}
-			}
-		});
-		
-		JButton b2 = new JButton ("Save Image");
-		b2.addActionListener (new ActionListener () {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				save ();
-			}
-		});
-		
-		controlFrame.add(l1);
-		controlFrame.add(tf1);
-		controlFrame.add(l2);
-		controlFrame.add(tf2);
-		controlFrame.add(l3);
-		controlFrame.add(pan);
-		controlFrame.add(powerField);
-		controlFrame.add(b1);
-		controlFrame.add(b2);
-		
-		controlFrame.setSize(200, 300);
-		controlFrame.setVisible(true);
+			});
+			
+			JButton b2 = new JButton ("Save Image");
+			b2.addActionListener (new ActionListener () {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					save ();
+				}
+			});
+			
+			controlFrame.add(l1);
+			controlFrame.add(tf1);
+			controlFrame.add(l2);
+			controlFrame.add(tf2);
+			controlFrame.add(l3);
+			controlFrame.add(pan);
+			controlFrame.add(powerField);
+			controlFrame.add(b1);
+			controlFrame.add(b2);
+			
+			controlFrame.setSize(200, 300);
+			controlFrame.setVisible(true);
+		}
 	}
 	
 	private int imageSize;
@@ -128,6 +131,8 @@ public class Anybrot {
 	private float yPos;
 	private float zoom;
 	private int power = 2;
+	private BufferedImage i;
+	private boolean shouldBeVisual;
 	
 	public void setPosition (float newXPos, float newYPos) {
 		xPos = newXPos;
@@ -140,29 +145,13 @@ public class Anybrot {
 	
 	public void save () {
 		
-		File folder = new File(".");
-		File[] listOfFiles = folder.listFiles();
-		int num = 0;
-		
-		for (int i = 0; i < listOfFiles.length; i++) {
-			if (listOfFiles[i].getName().length() > 10) {
-				if (listOfFiles[i].getName().substring(0, 11).equals("Mandelbrot-")) {
-					int n = Integer.parseInt(listOfFiles[i].getName().substring(11, 12));
-					if (n > num) num = n;
-				}
-			}
-		}
-		
-		num++;
 		try {
-			File outputfile = new File("Mandelbrot-" + num + ".png");
+			File outputfile = new File("Mandelbrot-" + maxIterations + "-" + xPos + ":" + yPos + "-" + power + "-" + zoom + ".png");
 		    ImageIO.write(i, "png", outputfile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	private BufferedImage i;
 	
 	private void processPixel (int xLoc, int yLoc) {
 		double xValue = (float)xLoc;
@@ -187,8 +176,10 @@ public class Anybrot {
 		int rgb = col.getRGB();
 		i.setRGB(xLoc, yLoc, rgb);
 		
-		displayImage.getImage().flush();
-		f.repaint();
+		if (shouldBeVisual) {
+			displayImage.getImage().flush();
+			f.repaint();
+		}
 	}
 	
 	private ImageIcon displayImage;
@@ -196,17 +187,19 @@ public class Anybrot {
 	
 	public void prepare () {
 		i = new BufferedImage (imageSize, imageSize, BufferedImage.TYPE_INT_ARGB);
-		displayImage = new ImageIcon (i);
-		
-		f = new JFrame ("Result");
-		f.setSize(800, 800);
-		f.setLayout(new GridLayout ());
-		JLabel l = new JLabel(displayImage);
-	
-		f.add(l);
-		
-		f.setVisible(true);
-		f.pack();
+		if (shouldBeVisual) {
+			displayImage = new ImageIcon (i);
+			
+			f = new JFrame ("Result");
+			f.setSize(800, 800);
+			f.setLayout(new GridLayout ());
+			JLabel l = new JLabel(displayImage);
+			
+			f.add(l);
+			
+			f.setVisible(true);
+			f.pack();
+		}
 	}
 	
 	public void calculate () {
@@ -266,6 +259,9 @@ public class Anybrot {
 		
 		
 		System.out.println("Calculations done.");
+		if (!shouldBeVisual) {
+			save ();
+		}
 	}
 	
 }
