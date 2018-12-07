@@ -27,7 +27,7 @@ public class Anybrot {
 	public static void main(String[] args) {
 		float xPos = 0.0f;
 		float yPos = 0.7f;
-		Anybrot sgf = new Anybrot (2048, 64, xPos, yPos, 0.1f, true);
+		Anybrot sgf = new Anybrot (512, 64, xPos, yPos, 0.1f, true);
 		sgf.prepare();
 		sgf.calculate();
 		try {
@@ -56,7 +56,7 @@ public class Anybrot {
 		if (shouldBeVisual) {
 			JFrame controlFrame = new JFrame ("Control Frame");
 			controlFrame.setLayout(new GridLayout (8, 1));
-			
+			controlFrame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
 			JLabel l1 = new JLabel ("Zoom value");
 			JTextField tf1 = new JTextField ();
 			tf1.setText("" + zoom);
@@ -130,7 +130,7 @@ public class Anybrot {
 	private float xPos;
 	private float yPos;
 	private float zoom;
-	private int power = 2;
+	private float power = 2;
 	private BufferedImage i;
 	private boolean shouldBeVisual;
 	
@@ -196,7 +196,7 @@ public class Anybrot {
 			JLabel l = new JLabel(displayImage);
 			
 			f.add(l);
-			
+			f.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
 			f.setVisible(true);
 			f.pack();
 		}
