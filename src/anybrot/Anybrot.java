@@ -109,7 +109,7 @@ public class Anybrot {
 			b2.addActionListener (new ActionListener () {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					save ();
+					save ("Image Latest");
 				}
 			});
 			
