@@ -6,6 +6,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -16,24 +18,30 @@ import org.apache.commons.math3.complex.*;
 
 public class Anybrot {
 
+	// Equations:
+	// Z = (Z^2) + c              Mandelbrot
+	// Z = (Z^d) + c              Multibrot
+	// Z = (Z^d) - (Z^(d-1)) + c  Power Difference
+	// Z = (Z^2) - (Z^(1/2))      Inverse Power
+	
 	public int runSet (Complex c, int maxIterations) {
 		Complex z = c;
 		for (int its = 0; its < maxIterations; its++) {
 			if (z.abs() > 2.0) return its;
-			Complex tmp = z.pow(power-1);
-			z = z.pow(power).subtract(tmp).add(c);
+			//Complex tmp = z.pow(power-1);
+			z = z.pow(2).subtract (z.pow(0.5));
 		}
 		return maxIterations;
 	}
 	
 	public static void main(String[] args) {
-		runPowerDemo ();          
+		runZoomDemo ();         
 	}
 	
 	public static void runNormal () {
 		float xPos = 0.0f;
 		float yPos = 0.0f;
-		Anybrot sgf = new Anybrot (1024, 64, xPos, yPos, 0.2f, true);
+		Anybrot sgf = new Anybrot (1024, 20, xPos, yPos, 0.2f, true);
 		sgf.prepare();
 		sgf.calculate();
 	}
@@ -52,6 +60,20 @@ public class Anybrot {
 		}
 	}
 	
+	// Requires inverse power fractal, 
+	public static void runZoomDemo () {
+		Anybrot sgf = new Anybrot (2048, 22, -1.7548777f, -1.4133075E-9f, 0.2f, false);
+		sgf.prepare();
+		int num = 0;
+		for (float z = 0.2f; z <= 20000000; z += z/5) {
+			System.out.println("Beginning analysis of zoom value " + z);
+			sgf.setZoom(z);
+			sgf.calculate();
+			sgf.save("Zoom Scroll 1/Zoom " + num);
+			num++;
+		}
+	}
+	
 	public Anybrot (int imageSizee, int maxIterationss, float xPoss, float yPoss, float zoomm, boolean shouldBeVisuall) {
 		this.imageSize = imageSizee;
 		this.maxIterations = maxIterationss;
@@ -65,17 +87,17 @@ public class Anybrot {
 			controlFrame.setLayout(new GridLayout (8, 1));
 			controlFrame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
 			JLabel l1 = new JLabel ("Zoom value");
-			JTextField tf1 = new JTextField ();
+			tf1 = new JTextField ();
 			tf1.setText("" + zoom);
 			JLabel l2 = new JLabel ("Iteration depth limit");
-			JTextField tf2 = new JTextField ();
+			tf2 = new JTextField ();
 			tf2.setText("" + maxIterations);
 			JLabel l3 = new JLabel ("Position");
 			
-			JTextField xField = new JTextField ();
+			xField = new JTextField ();
 			xField.setText("" + xPos);
 			
-			JTextField yField = new JTextField ();
+			yField = new JTextField ();
 			yField.setText("" + yPos);
 			
 			JPanel pan = new JPanel ();
@@ -83,7 +105,7 @@ public class Anybrot {
 			pan.add(xField);
 			pan.add(yField);
 			
-			JTextField powerField = new JTextField ();
+			powerField = new JTextField ();
 			powerField.setText("" + power);
 			
 			JButton b1 = new JButton ("Redraw image");
@@ -198,6 +220,11 @@ public class Anybrot {
 	
 	private ImageIcon displayImage;
 	private JFrame f;
+	private JTextField tf1;
+	private JTextField tf2;
+	private JTextField xField;
+	private JTextField yField;
+	private JTextField powerField;
 	
 	public void prepare () {
 		i = new BufferedImage (imageSize, imageSize, BufferedImage.TYPE_INT_ARGB);
@@ -211,6 +238,26 @@ public class Anybrot {
 			
 			f.add(l);
 			f.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+			
+			f.addMouseListener(new MouseListener () {
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					handleMouseClick (e);
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {}
+
+				@Override
+				public void mouseReleased(MouseEvent e) {}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {}
+
+				@Override
+				public void mouseExited(MouseEvent e) {}
+			});
 			f.setVisible(true);
 			f.pack();
 		}
@@ -278,4 +325,32 @@ public class Anybrot {
 //		}
 	}
 	
+	
+	public void handleMouseClick (MouseEvent e) {
+		float xPosition = e.getX()-(float)f.getWidth()/2f;
+		xPosition /= (float)f.getWidth();
+		
+		float yPosition = (float)e.getY()-(float)f.getHeight()/2f;
+		yPosition /= (float)f.getHeight();
+		
+		xPosition /= zoom;
+		yPosition /= zoom;
+		
+		xPosition -= this.xPos;//*(float)this.zoom;
+		yPosition -= this.yPos;//*(float)this.zoom;
+		
+		this.xPos = 0-xPosition;
+		this.yPos = 0-yPosition;
+		
+		xField.setText("" + this.xPos);
+		yField.setText("" + this.yPos);
+		
+		Thread t = new Thread (new Runnable () {
+			@Override
+			public void run() {
+				calculate ();
+			}
+		});
+		t.start();
+	}
 }
