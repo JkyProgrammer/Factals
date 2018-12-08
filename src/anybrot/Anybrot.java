@@ -27,25 +27,29 @@ public class Anybrot {
 	}
 	
 	public static void main(String[] args) {
+		runPowerDemo ();          
+	}
+	
+	public static void runNormal () {
 		float xPos = 0.0f;
 		float yPos = 0.0f;
 		Anybrot sgf = new Anybrot (1024, 64, xPos, yPos, 0.2f, true);
 		sgf.prepare();
 		sgf.calculate();
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+	}
+	
+	public static void runPowerDemo () {
+		Anybrot sgf = new Anybrot (2048, 32, 0, 0, 0.3f, false);
+		sgf.prepare();
+		sgf.calculate();
+		int num = 0;
+		for (float p = -4.0f; p <= 4.0; p += 0.05) {
+			System.out.println("Beginning analysis of power value " + p + ", at position: " + 0.0 + ", " + 0.0);
+			sgf.setPower (p);
+			sgf.calculate();
+			sgf.save("Power Scroll 2/Power " + num);
+			num++;
 		}
-		
-//		for (float p = -2.0f; p <= 2.0; p += 0.1) {
-//			System.out.println("Beginning analysis of power value " + p + ", at position: " + xPos + ", " + yPos);
-//			sgf.setPower (p);
-//			sgf.calculate();
-//			sgf.save("Power " + p);
-//		}
-		
-		System.out.println("Zooming finished.");
 	}
 	
 	public Anybrot (int imageSizee, int maxIterationss, float xPoss, float yPoss, float zoomm, boolean shouldBeVisuall) {
@@ -269,9 +273,9 @@ public class Anybrot {
 		
 		
 		System.out.println("Calculations done.");
-		if (!shouldBeVisual) {
-			save ();
-		}
+//		if (!shouldBeVisual) {
+//			save ();
+//		}
 	}
 	
 }
