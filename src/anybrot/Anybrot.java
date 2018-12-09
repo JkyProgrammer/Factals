@@ -11,6 +11,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -20,11 +21,43 @@ public class Anybrot {
 
 	// Equations:
 	// Z = (Z^2) + c              Mandelbrot
-	// Z = (Z^d) + c              Multibrot
-	// Z = (Z^d) - (Z^(d-1)) + c  Power Difference
-	// Z = (Z^2) - (Z^(1/2))      Inverse Power
+	public int mandelbrot (Complex c, int maxIterations) {
+		Complex z = c;
+		for (int its = 0; its < maxIterations; its++) {
+			if (z.abs() > 2.0) return its;
+			//Complex tmp = z.pow(power-1);
+			z = z.pow(2).add(c);
+		}
+		return maxIterations;
+	}
 	
-	public int runSet (Complex c, int maxIterations) {
+	
+	// Z = (Z^d) + c              Multibrot
+	public int multibrot (Complex c, int maxIterations) {
+		Complex z = c;
+		for (int its = 0; its < maxIterations; its++) {
+			if (z.abs() > 2.0) return its;
+			//Complex tmp = z.pow(power-1);
+			z = z.pow(power).add(c);
+		}
+		return maxIterations;
+	}
+	
+	
+	// Z = (Z^d) - (Z^(d-1)) + c  Power Difference
+	public int powerDifference (Complex c, int maxIterations) {
+		Complex z = c;
+		for (int its = 0; its < maxIterations; its++) {
+			if (z.abs() > 2.0) return its;
+			Complex tmp = z.pow(power-1);
+			z = z.pow(power).subtract (tmp);
+		}
+		return maxIterations;
+	}
+	
+	
+	// Z = (Z^2) - (Z^(1/2))      Inverse Power
+	public int inversePower (Complex c, int maxIterations) {
 		Complex z = c;
 		for (int its = 0; its < maxIterations; its++) {
 			if (z.abs() > 2.0) return its;
@@ -34,8 +67,13 @@ public class Anybrot {
 		return maxIterations;
 	}
 	
+	public int runSet (Complex c, int maxIterations) {
+		return powerDifference(c, maxIterations);
+	}
+	
+	
 	public static void main(String[] args) {
-		runZoomDemo ();         
+		runNormal();        
 	}
 	
 	public static void runNormal () {
@@ -264,56 +302,42 @@ public class Anybrot {
 	}
 	
 	public void calculate () {
-		Thread t1 = new Thread (new Runnable () {
-			@Override
-			public void run() {
-				for (int yLoc = 0; yLoc < imageSize/4; yLoc++) {
-					for (int xLoc = 0; xLoc < imageSize; xLoc++) {
-						processPixel (xLoc, yLoc);
-					}
-				}
-			}
-		});
-		Thread t2 = new Thread (new Runnable () {
-			@Override
-			public void run() {
-				for (int yLoc = imageSize/4; yLoc < imageSize/2; yLoc++) {
-					for (int xLoc = 0; xLoc < imageSize; xLoc++) {
-						processPixel (xLoc, yLoc);
-					}
-				}
-			}
-		});
-		Thread t3 = new Thread (new Runnable () {
-			@Override
-			public void run() {
-				for (int yLoc = imageSize/2; yLoc < imageSize*3/4; yLoc++) {
-					for (int xLoc = 0; xLoc < imageSize; xLoc++) {
-						processPixel (xLoc, yLoc);
-					}
-				}
-			}
-		});
-		Thread t4 = new Thread (new Runnable () {
-			@Override
-			public void run() {
-				for (int yLoc = imageSize*3/4; yLoc < imageSize; yLoc++) {
-					for (int xLoc = 0; xLoc < imageSize; xLoc++) {
-						processPixel (xLoc, yLoc);
-					}
-				}
-			}
-		});
+		ArrayList<Thread> ts = new ArrayList<Thread> ();
 		
-		t1.start();
-		t2.start();
-		t3.start();
-		t4.start();
+		int numThreads = Runtime.getRuntime().availableProcessors();
+		System.out.println("Starting calculation with " + numThreads + " threads.");
+		int step = imageSize/numThreads;
+		
+		int startLoc = 0;
+		int endLoc = 0 + step;
+		
+		for (int i = 0; i < numThreads; i++) {
+			int sLoc = startLoc;
+			int eLoc = endLoc;
+			Thread t = new Thread (new Runnable () {
+				@Override
+				public void run() {
+					
+					for (int yLoc = sLoc; yLoc < eLoc; yLoc++) {
+						for (int xLoc = 0; xLoc < imageSize; xLoc++) {
+							processPixel (xLoc, yLoc);
+						}
+					}
+				}
+			});
+			ts.add(t);
+			
+			startLoc = endLoc;
+			endLoc = startLoc + step;
+		}
+		for (Thread t : ts) {
+			t.start();
+		}
+		
 		try {
-			t1.join();
-			t2.join();
-			t3.join();
-			t4.join();
+			for (Thread t : ts) {
+				t.join();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
