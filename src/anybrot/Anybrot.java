@@ -83,7 +83,7 @@ public class Anybrot {
 	
 	
 	public static void main(String[] args) {
-		runZoomDemo2();
+		runNormal();
 	}
 	
 	public static void runNormal () {
@@ -274,8 +274,12 @@ public class Anybrot {
 		yValue -= yPos;
 		
 		int result = runSet (xValue, yValue, maxIterations);
+		
 		float mappedGrey = 1f - (float)result/(float)maxIterations;
-		Color col = new Color (mappedGrey, mappedGrey, mappedGrey);
+		
+		mappedGrey *= colours.size();
+		
+		Color col = colours.get((int)(mappedGrey-0.5));
 		int rgb = col.getRGB();
 		i.setRGB(xLoc, yLoc, rgb);
 		
@@ -294,6 +298,7 @@ public class Anybrot {
 	private JTextField powerField;
 	
 	public void prepare () {
+		colours = new ArrayList<Color> ();
 		i = new BufferedImage (imageSize, imageSize, BufferedImage.TYPE_INT_ARGB);
 		if (shouldBeVisual) {
 			displayImage = new ImageIcon (i);
@@ -330,7 +335,18 @@ public class Anybrot {
 		}
 	}
 	
+	private ArrayList<Color> colours;
 	public void calculate () {
+		// Set up colours
+		colours.clear();
+		colours.add(new Color (255, 215, 0));
+		colours.add(new Color (255, 184, 28));
+		colours.add(new Color (246, 141, 46));
+		colours.add(new Color (205, 84, 91));
+		colours.add(new Color (135, 24, 157));
+		colours.add(new Color (0, 171, 132));
+		
+		// Set up threads
 		ArrayList<Thread> ts = new ArrayList<Thread> ();
 		
 		int numThreads = Runtime.getRuntime().availableProcessors();
