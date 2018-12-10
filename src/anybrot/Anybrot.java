@@ -36,8 +36,8 @@ public class Anybrot {
       double x = cx;
       double y = cy;
       for (int its = 0; its < maxIterations; its++) {
-			if ((x^2)+(y^2) > 4.0) return its;
-			x = (x^2) - (y^2) + cx;
+			if (Math.pow (x, 2) + Math.pow (y, 2) > 4.0) return its;
+			x = Math.pow (x, 2) - Math.pow (y, 2) + cx;
 			y = (2 * x * y) + cy;
 		}
       return maxIterations;
@@ -71,20 +71,19 @@ public class Anybrot {
 		Complex z = c;
 		for (int its = 0; its < maxIterations; its++) {
 			if (z.abs() > 2.0) return its;
-			//Complex tmp = z.pow(power-1);
 			z = z.pow(2).subtract (z.pow(0.5));
 		}
 		return maxIterations;
 	}
 	
 	public int runSet (double x, double y, int maxIterations) {
-      Complex c = new Complex (x, y);
-		return powerDifference(c, maxIterations);
+		Complex c = new Complex (x, y);
+		return multibrot (c, maxIterations);
 	}
 	
 	
 	public static void main(String[] args) {
-		runNormal();        
+		runZoomDemo2();
 	}
 	
 	public static void runNormal () {
@@ -119,6 +118,21 @@ public class Anybrot {
 			sgf.setZoom(z);
 			sgf.calculate();
 			sgf.save("Zoom Scroll 1/Zoom " + num);
+			num++;
+		}
+	}
+	
+	// Requires multibrot fractal
+	public static void runZoomDemo2() { 
+		Anybrot sgf = new Anybrot (256, 512, 1.0353411f, 0.10399851f, 0.2f, true);
+		sgf.prepare();
+		sgf.setPower (-5);
+		int num = 0;
+		for (float z = 20f; z <= 200000000; z += z/4) {
+			System.out.println("Beginning analysis of zoom value " + z);
+			sgf.setZoom(z);
+			sgf.calculate();
+			sgf.save("Zoom Scroll 2/Zoom " + num);
 			num++;
 		}
 	}
@@ -223,6 +237,10 @@ public class Anybrot {
 	
 	public void setPower (float newPower) {
 		power = newPower;
+	}
+	
+	public void setMaxIterations (int newMaxIterations) {
+		maxIterations = newMaxIterations;
 	}
 	
 	public void save (String name) {
