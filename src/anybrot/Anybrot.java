@@ -60,7 +60,7 @@ public class Anybrot {
 		for (int its = 0; its < maxIterations; its++) {
 			if (z.abs() > 2.0) return its;
 			Complex tmp = z.pow(power-1);
-			z = z.pow(power).subtract (tmp);
+			z = z.pow(power).subtract (tmp).add(c);
 		}
 		return maxIterations;
 	}
