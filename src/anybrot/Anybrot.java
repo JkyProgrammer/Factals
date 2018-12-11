@@ -42,6 +42,17 @@ public class Anybrot {
 		}
       return maxIterations;
    }
+   
+   // Z = (Z^d) + k  Julia 2
+	public int julia2 (Complex c, int maxIterations) {
+		Complex z = c;
+		for (int its = 0; its < maxIterations; its++) {
+			if (z.abs() > 2.0) return its;
+			double k = -0.1948;
+			z = z.pow(power).add(k);
+		}
+		return maxIterations;
+	}
 	
 	// Z = (Z^d) + c              Multibrot
 	public int multibrot (Complex c, int maxIterations) {
@@ -78,7 +89,7 @@ public class Anybrot {
 	
 	public int runSet (double x, double y, int maxIterations) {
 		Complex c = new Complex (x, y);
-		return multibrot (c, maxIterations);
+		return julia2 (c, maxIterations);
 	}
 	
 	
@@ -284,9 +295,10 @@ public class Anybrot {
 		
 		float mappedGrey = 1f - (float)result/(float)maxIterations;
 		
-		mappedGrey *= colours.size();
+		float g = mappedGrey * colours.size();
 		
-		Color col = colours.get((int)(mappedGrey-0.5));
+		//Color col = colours.get((int)(g-0.5));
+		Color col = new Color (mappedGrey, mappedGrey, mappedGrey);
 		int rgb = col.getRGB();
 		i.setRGB(xLoc, yLoc, rgb);
 		
