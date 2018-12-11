@@ -147,7 +147,7 @@ public class Anybrot {
 		
 		if (shouldBeVisual) {
 			JFrame controlFrame = new JFrame ("Control Frame");
-			controlFrame.setLayout(new GridLayout (8, 1));
+			controlFrame.setLayout(new GridLayout (10, 1));
 			controlFrame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
 			JLabel l1 = new JLabel ("Zoom value");
 			tf1 = new JTextField ();
@@ -170,7 +170,8 @@ public class Anybrot {
 			
 			powerField = new JTextField ();
 			powerField.setText("" + power);
-			
+			JLabel l4 = new JLabel ("Exponent Factor");
+
 			JButton b1 = new JButton ("Redraw image");
 			b1.addActionListener (new ActionListener () {
 				@Override
@@ -209,10 +210,11 @@ public class Anybrot {
 			controlFrame.add(l3);
 			controlFrame.add(pan);
 			controlFrame.add(powerField);
+        controlFrame.add(l4);
 			controlFrame.add(b1);
 			controlFrame.add(b2);
 			
-			controlFrame.setSize(200, 300);
+			controlFrame.setSize(400, 300);
 			controlFrame.setVisible(true);
 		}
 	}
@@ -229,18 +231,23 @@ public class Anybrot {
 	public void setPosition (float newXPos, float newYPos) {
 		xPos = newXPos;
 		yPos = newYPos;
+     xField.setText("" + xPos);
+     yField.setText("" + yPos);
 	}
 	
 	public void setZoom (float newZoom) {
 		zoom = newZoom;
+      tf1.setText("" + zoom);
 	}
 	
 	public void setPower (float newPower) {
 		power = newPower;
+      powerField.setText("" + power);
 	}
 	
 	public void setMaxIterations (int newMaxIterations) {
 		maxIterations = newMaxIterations;
+      tf2.setText("" + maxIterations);
 	}
 	
 	public void save (String name) {
