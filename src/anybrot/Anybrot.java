@@ -64,7 +64,6 @@ public class Anybrot {
 		return maxIterations;
 	}
 	
-	
 	// Z = (Z^d) - (Z^(d-1)) + c  Power Difference
 	public int powerDifference (Complex c, int maxIterations) {
 		Complex z = c;
@@ -75,7 +74,6 @@ public class Anybrot {
 		}
 		return maxIterations;
 	}
-	
 	
 	// Z = (Z^2) - (Z^(1/2))      Inverse Power
 	public int inversePower (Complex c, int maxIterations) {
@@ -89,7 +87,7 @@ public class Anybrot {
 	
 	public int runSet (double x, double y, int maxIterations) {
 		Complex c = new Complex (x, y);
-		return julia2 (c, maxIterations);
+		return multibrot (c, maxIterations);
 	}
 	
 	
@@ -100,7 +98,7 @@ public class Anybrot {
 	public static void runNormal () {
 		float xPos = 0.0f;
 		float yPos = 0.0f;
-		Anybrot sgf = new Anybrot (4096, 300, xPos, yPos, 0.3f, true);
+		Anybrot sgf = new Anybrot (1024, 300, xPos, yPos, 0.3f, true);
 		sgf.setPower(1.5f);
 		sgf.prepare();
 		sgf.calculate();
@@ -140,7 +138,7 @@ public class Anybrot {
 		sgf.prepare();
 		sgf.setPower (-5);
 		int num = 0;
-		for (float z = 20f; z <= 200000000; z += z/4) {
+		for (float z = 20f; z <= 200000000; z += z/10) {
 			System.out.println("Beginning analysis of zoom value " + z);
 			sgf.setZoom(z);
 			sgf.calculate();
@@ -262,6 +260,7 @@ public class Anybrot {
 	private float power = 2;
 	private BufferedImage i;
 	private boolean shouldBeVisual;
+	private int colourGraduationDetail = 50;
 	
 	public void setPosition (float newXPos, float newYPos) {
 		xPos = newXPos;
@@ -333,13 +332,11 @@ public class Anybrot {
 	}
 	
 	private Color getColour (float initialMapping) {
-		float g = initialMapping * colours.size();
-      int m = (int)(g-0.5);
-      m = m % 200;
+		float g = initialMapping * maxIterations;
+		int m = (int)(g-0.5);
+		m = m % colours.size();
 		return colours.get(m);
 	}
-	
-   private int colourGraduationDetail = 200;
 
 	private void colourSetup () {
 		colours.clear();
@@ -383,6 +380,7 @@ public class Anybrot {
 				
 				colours.add(new Color (r, g, b));
 			}
+			
 		}
 	}
 	
