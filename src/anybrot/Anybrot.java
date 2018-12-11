@@ -334,9 +334,13 @@ public class Anybrot {
 	
 	private Color getColour (float initialMapping) {
 		float g = initialMapping * colours.size();
-		return colours.get((int)(g-0.5));
+      int m = (int)(g-0.5);
+      m = m % 200;
+		return colours.get(m);
 	}
 	
+   private int colourGraduationDetail = 200;
+
 	private void colourSetup () {
 		colours.clear();
 		ArrayList<Color> handles = new ArrayList<Color> ();
@@ -358,7 +362,7 @@ public class Anybrot {
 			handles.add(new Color (255, 255, 255));
 		}
 		
-		int numTotalColours = maxIterations;
+		int numTotalColours = colourGraduationDetail;
 		int numColoursPerHandle = numTotalColours/(handles.size()-1);
 		
 		for (int l = 0; l < handles.size()-1; l++) {
