@@ -100,7 +100,8 @@ public class Anybrot {
 	public static void runNormal () {
 		float xPos = 0.0f;
 		float yPos = 0.0f;
-		Anybrot sgf = new Anybrot (1024, 20, xPos, yPos, 0.2f, true);
+		Anybrot sgf = new Anybrot (4096, 300, xPos, yPos, 0.3f, true);
+		sgf.setPower(1.5f);
 		sgf.prepare();
 		sgf.calculate();
 	}
@@ -158,12 +159,12 @@ public class Anybrot {
 		
 		if (shouldBeVisual) {
 			JFrame controlFrame = new JFrame ("Control Frame");
-			controlFrame.setLayout(new GridLayout (10, 1));
+			controlFrame.setLayout(new GridLayout (11, 1));
 			controlFrame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
-			JLabel l1 = new JLabel ("Zoom value");
+			JLabel l1 = new JLabel ("Zoom Value");
 			tf1 = new JTextField ();
 			tf1.setText("" + zoom);
-			JLabel l2 = new JLabel ("Iteration depth limit");
+			JLabel l2 = new JLabel ("Iteration Limit");
 			tf2 = new JTextField ();
 			tf2.setText("" + maxIterations);
 			JLabel l3 = new JLabel ("Position");
@@ -182,7 +183,23 @@ public class Anybrot {
 			powerField = new JTextField ();
 			powerField.setText("" + power);
 			JLabel l4 = new JLabel ("Exponent Factor");
-
+			
+			palletSelector = new JComboBox<String> ();
+			
+			palletSelector.addItem("Greyscale");
+			palletSelector.addItem("Green to Yellow");
+			palletSelector.addItem("Blue to White");
+			
+			palletSelector.setSelectedIndex(selectedPallet);
+			
+			palletSelector.addActionListener(new ActionListener () {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					selectedPallet = palletSelector.getSelectedIndex();
+				}
+			});
+			JLabel l5 = new JLabel ("Colour Scheme");
+			
 			JButton b1 = new JButton ("Redraw image");
 			b1.addActionListener (new ActionListener () {
 				@Override
@@ -216,12 +233,19 @@ public class Anybrot {
 			
 			controlFrame.add(l1);
 			controlFrame.add(tf1);
+			
 			controlFrame.add(l2);
 			controlFrame.add(tf2);
+			
 			controlFrame.add(l3);
 			controlFrame.add(pan);
+			
+			controlFrame.add(l4);
 			controlFrame.add(powerField);
-        controlFrame.add(l4);
+			
+			controlFrame.add(l5);
+			controlFrame.add(palletSelector);
+			
 			controlFrame.add(b1);
 			controlFrame.add(b2);
 			
@@ -295,10 +319,10 @@ public class Anybrot {
 		
 		float mappedGrey = 1f - (float)result/(float)maxIterations;
 		
-		float g = mappedGrey * colours.size();
 		
-		//Color col = colours.get((int)(g-0.5));
-		Color col = new Color (mappedGrey, mappedGrey, mappedGrey);
+		
+		Color col = getColour (mappedGrey);
+		//Color col = new Color (mappedGrey, mappedGrey, mappedGrey);
 		int rgb = col.getRGB();
 		i.setRGB(xLoc, yLoc, rgb);
 		
@@ -308,6 +332,57 @@ public class Anybrot {
 		}
 	}
 	
+	private Color getColour (float initialMapping) {
+		float g = initialMapping * colours.size();
+		return colours.get((int)(g-0.5));
+	}
+	
+	private void colourSetup () {
+		colours.clear();
+		ArrayList<Color> handles = new ArrayList<Color> ();
+		if (selectedPallet == ColourPallet.greenToYellow) {
+			handles.add(new Color (255, 215, 0));
+			handles.add(new Color (255, 184, 28));
+			handles.add(new Color (246, 141, 46));
+			handles.add(new Color (205, 84, 91));
+			handles.add(new Color (135, 24, 157));
+			handles.add(new Color (0, 171, 132));
+		} else if (selectedPallet == ColourPallet.greyScale) {
+			handles.add(new Color (0, 0, 0));
+			
+			handles.add(new Color (255, 255, 255));
+		} else if (selectedPallet == ColourPallet.blueToWhite) {
+			handles.add(new Color (0, 125, 255));
+			handles.add(new Color (0, 0, 255));
+			handles.add(new Color (120, 120, 255));
+			handles.add(new Color (255, 255, 255));
+		}
+		
+		int numTotalColours = maxIterations;
+		int numColoursPerHandle = numTotalColours/(handles.size()-1);
+		
+		for (int l = 0; l < handles.size()-1; l++) {
+			Color c1 = handles.get(l);
+			Color c2 = handles.get(l+1);
+			
+			float rStep = (float)(c2.getRed() - c1.getRed())/(float)numColoursPerHandle;
+			float gStep = (float)(c2.getGreen() - c1.getGreen())/(float)numColoursPerHandle;
+			float bStep = (float)(c2.getBlue() - c1.getBlue())/(float)numColoursPerHandle;
+			
+			for (int i = 0; i < numColoursPerHandle; i++) {
+				float r = c1.getRed() + (rStep*i);
+				r /= 255;
+				float g = c1.getGreen() + (gStep*i);
+				g /= 255;
+				float b = c1.getBlue() + (bStep*i);
+				b /= 255;
+				
+				colours.add(new Color (r, g, b));
+			}
+		}
+	}
+	
+	private int selectedPallet = ColourPallet.blueToWhite;
 	private ImageIcon displayImage;
 	private JFrame f;
 	private JTextField tf1;
@@ -315,6 +390,7 @@ public class Anybrot {
 	private JTextField xField;
 	private JTextField yField;
 	private JTextField powerField;
+	private JComboBox palletSelector;
 	
 	public void prepare () {
 		colours = new ArrayList<Color> ();
@@ -357,13 +433,7 @@ public class Anybrot {
 	private ArrayList<Color> colours;
 	public void calculate () {
 		// Set up colours
-		colours.clear();
-		colours.add(new Color (255, 215, 0));
-		colours.add(new Color (255, 184, 28));
-		colours.add(new Color (246, 141, 46));
-		colours.add(new Color (205, 84, 91));
-		colours.add(new Color (135, 24, 157));
-		colours.add(new Color (0, 171, 132));
+		colourSetup ();
 		
 		// Set up threads
 		ArrayList<Thread> ts = new ArrayList<Thread> ();
@@ -381,7 +451,6 @@ public class Anybrot {
 			Thread t = new Thread (new Runnable () {
 				@Override
 				public void run() {
-					
 					for (int yLoc = sLoc; yLoc < eLoc; yLoc++) {
 						for (int xLoc = 0; xLoc < imageSize; xLoc++) {
 							processPixel (xLoc, yLoc);
@@ -405,12 +474,8 @@ public class Anybrot {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
+
 		System.out.println("Calculations done.");
-//		if (!shouldBeVisual) {
-//			save ();
-//		}
 	}
 	
 	
@@ -424,8 +489,8 @@ public class Anybrot {
 		xPosition /= zoom;
 		yPosition /= zoom;
 		
-		xPosition -= this.xPos;//*(float)this.zoom;
-		yPosition -= this.yPos;//*(float)this.zoom;
+		xPosition -= this.xPos;
+		yPosition -= this.yPos;
 		
 		this.xPos = 0-xPosition;
 		this.yPos = 0-yPosition;
