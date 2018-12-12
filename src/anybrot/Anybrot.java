@@ -98,10 +98,16 @@ public class Anybrot {
 	public static void runNormal () {
 		float xPos = 0.0f;
 		float yPos = 0.0f;
-		Anybrot sgf = new Anybrot (1024, 300, xPos, yPos, 0.3f, true);
-		sgf.setPower(1.5f);
+		//Anybrot sgf = new Anybrot (4096, 300, xPos, yPos, 0.3f, true);
+		//sgf.setPower(1.5f);
+		//sgf.prepare();
+		//sgf.calculate();
+		
+		Anybrot sgf = new Anybrot (4096, 512, 1.0353411f, 0.10399851f, 6000f, true);
 		sgf.prepare();
+		sgf.setPower (-5);
 		sgf.calculate();
+		sgf.save("High calc");
 	}
 	
 	public static void runPowerDemo () {
@@ -341,9 +347,11 @@ public class Anybrot {
 	
 	private Color getColour (float initialMapping) {
 		float g = initialMapping * maxIterations;
-		int m = (int)(g-0.5);
-		m = m % colours.size();
-		return colours.get(m);
+		if (initialMapping != 0.0) {
+			int m = (int)(g-0.5);
+			m = m % colours.size();
+			return colours.get(m);
+		} else {return new Color (0,0,0);}
 	}
 
 	private void colourSetup () {
@@ -386,10 +394,10 @@ public class Anybrot {
 				float b = c1.getBlue() + (bStep*i);
 				b /= 255;
 				
-				colours.add(new Color (r, g, b));
+				colours.add(0, new Color (r, g, b));
 			}
-			
 		}
+		
 	}
 	
 	private int selectedPallet = ColourPallet.blueToWhite;
