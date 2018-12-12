@@ -157,7 +157,7 @@ public class Anybrot {
 		
 		if (shouldBeVisual) {
 			JFrame controlFrame = new JFrame ("Control Frame");
-			controlFrame.setLayout(new GridLayout (11, 1));
+			controlFrame.setLayout(new GridLayout (14, 1));
 			controlFrame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
 			JLabel l1 = new JLabel ("Zoom Value");
 			tf1 = new JTextField ();
@@ -198,6 +198,10 @@ public class Anybrot {
 			});
 			JLabel l5 = new JLabel ("Colour Scheme");
 			
+			tf3 = new JTextField ();
+			tf3.setText ("" + this.colourGraduationDetail);
+			JLabel l6 = new JLabel ("Number of Colour Graduations");
+			
 			JButton b1 = new JButton ("Redraw image");
 			b1.addActionListener (new ActionListener () {
 				@Override
@@ -208,6 +212,7 @@ public class Anybrot {
 						xPos = Float.parseFloat(xField.getText());
 						yPos = Float.parseFloat(yField.getText());
 						power = Float.parseFloat(powerField.getText());
+						colourGraduationDetail = Integer.parseInt(tf3.getText());
 						Thread t = new Thread (new Runnable () {
 							@Override
 							public void run() {
@@ -243,6 +248,9 @@ public class Anybrot {
 			
 			controlFrame.add(l5);
 			controlFrame.add(palletSelector);
+			
+			controlFrame.add(l6);
+			controlFrame.add(tf3);
 			
 			controlFrame.add(b1);
 			controlFrame.add(b2);
@@ -393,6 +401,7 @@ public class Anybrot {
 	private JTextField yField;
 	private JTextField powerField;
 	private JComboBox palletSelector;
+	private JTextField tf3;
 	
 	public void prepare () {
 		colours = new ArrayList<Color> ();
