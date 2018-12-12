@@ -98,16 +98,16 @@ public class Anybrot {
 	public static void runNormal () {
 		float xPos = 0.0f;
 		float yPos = 0.0f;
-		//Anybrot sgf = new Anybrot (4096, 300, xPos, yPos, 0.3f, true);
-		//sgf.setPower(1.5f);
-		//sgf.prepare();
-		//sgf.calculate();
-		
-		Anybrot sgf = new Anybrot (4096, 512, 1.0353411f, 0.10399851f, 6000f, true);
+		Anybrot sgf = new Anybrot (1024, 300, xPos, yPos, 0.3f, true);
+		sgf.setPower(1.5f);
 		sgf.prepare();
-		sgf.setPower (-5);
 		sgf.calculate();
-		sgf.save("High calc");
+		
+//		Anybrot sgf = new Anybrot (4096, 512, 1.0353411f, 0.10399851f, 6000f, true);
+//		sgf.prepare();
+//		sgf.setPower (-5);
+//		sgf.calculate();
+//		sgf.save("High calc");
 	}
 	
 	public static void runPowerDemo () {
