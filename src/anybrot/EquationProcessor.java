@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 import org.apache.commons.math3.complex.Complex;
 
 public class EquationProcessor {
-	public static Function generateFunction (String raw) {
+	public static Operation generateFunction (String raw) {
 		String simplified = raw.replaceAll(" ", "");
 		ArrayList<Character> valids = new ArrayList<Character> (Arrays.asList('Z', 'z', '^', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '(', ')', '*', '/', '.'));
 		
@@ -24,7 +24,7 @@ public class EquationProcessor {
 		return decode (simplified);
 	}
 	
-	private static Function decode (String simplified) {
+	private static Operation decode (String simplified) {
 		// WIP
 		return null;
 	}
