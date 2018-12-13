@@ -38,7 +38,22 @@ public class EquationProcessor {
 	private static Operation decode (String simplified) {
 		int openBracks = countOccurrences (simplified, '(');
 		int closeBracks = countOccurrences (simplified, ')');
-		//HERE
+		if (openBracks != closeBracks) syntaxException ("Bracket error in equation.");
+		ArrayList<Operation> ops = new ArrayList<Operation> ();
+		
+		int exp = 0;
+		while (openBracks > 0) {
+			String sub = simplified.substring(simplified.indexOf("("), simplified.indexOf("("));
+			simplified.replaceFirst(sub, "exp"+exp);
+			ops.add (decode (sub));
+			openBracks = countOccurrences (simplified, '(');
+			closeBracks = countOccurrences (simplified, ')');
+		}
+		
+		// What's left has no brackets
+		// Each bracketed expression has been processed and is represented in the ops array
+		// HERE
+		
 		return null;
 	}
 	
