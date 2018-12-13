@@ -1,9 +1,7 @@
 package anybrot;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -14,8 +12,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import org.apache.commons.math3.complex.*;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import org.apache.commons.math3.complex.Complex;
 
 public class Anybrot {
 
@@ -64,6 +69,16 @@ public class Anybrot {
 		return maxIterations;
 	}
 	
+	// Z = (Z^Z) + c              Z Power
+		public int zPower (Complex c, int maxIterations) {
+			Complex z = c;
+			for (int its = 0; its < maxIterations; its++) {
+				if (z.abs() > 2.0) return its;
+				z = z.pow(z).add(c);
+			}
+			return maxIterations;
+		}
+	
 	// Z = (Z^d) - (Z^(d-1)) + c  Power Difference
 	public int powerDifference (Complex c, int maxIterations) {
 		Complex z = c;
@@ -87,7 +102,7 @@ public class Anybrot {
 	
 	public int runSet (double x, double y, int maxIterations) {
 		Complex c = new Complex (x, y);
-		return multibrot (c, maxIterations);
+		return powerDifference (c, maxIterations);
 	}
 	
 	
@@ -98,10 +113,10 @@ public class Anybrot {
 	public static void runNormal () {
 		float xPos = 0.0f;
 		float yPos = 0.0f;
-		Anybrot sgf = new Anybrot (1024, 300, xPos, yPos, 0.3f, true);
-		sgf.setPower(1.5f);
+		Anybrot sgf = new Anybrot (4096, 100, xPos, yPos, 0.3f, true);
+		sgf.setPower(2.0f);
 		sgf.prepare();
-		sgf.calculate();
+		//sgf.calculate();
 		
 //		Anybrot sgf = new Anybrot (4096, 512, 1.0353411f, 0.10399851f, 6000f, true);
 //		sgf.prepare();
@@ -408,7 +423,7 @@ public class Anybrot {
 	private JTextField xField;
 	private JTextField yField;
 	private JTextField powerField;
-	private JComboBox palletSelector;
+	private JComboBox<String> palletSelector;
 	private JTextField tf3;
 	
 	public void prepare () {

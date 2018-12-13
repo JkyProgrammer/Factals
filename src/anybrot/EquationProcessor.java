@@ -10,7 +10,7 @@ import org.apache.commons.math3.complex.Complex;
 public class EquationProcessor {
 	public static Operation generateFunction (String raw) {
 		String simplified = raw.replaceAll(" ", "");
-		ArrayList<Character> valids = new ArrayList<Character> (Arrays.asList('Z', 'z', '^', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '(', ')', '*', '/', '.'));
+		ArrayList<Character> valids = new ArrayList<Character> (Arrays.asList('Z', 'z', 'C', 'c', '^', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '(', ')', '*', '/', '.'));
 		
 		// Verify the input for invalid characters
 		for (char chr : simplified.toCharArray()) {
@@ -24,8 +24,21 @@ public class EquationProcessor {
 		return decode (simplified);
 	}
 	
+	private static int countOccurrences (String s, char c) {
+		int count = 0;
+		for (char cc : s.toCharArray()) {
+			if (c == cc) {
+				count++;
+			}
+		}
+		
+		return count;
+	}
+	
 	private static Operation decode (String simplified) {
-		// WIP
+		int openBracks = countOccurrences (simplified, '(');
+		int closeBracks = countOccurrences (simplified, ')');
+		//HERE
 		return null;
 	}
 	
