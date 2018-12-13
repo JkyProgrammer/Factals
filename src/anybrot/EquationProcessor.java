@@ -72,9 +72,35 @@ public class EquationProcessor {
 			break;
 		}
 		
-		// HERE
+		int length = simplified.length();
 		
-		return null;
+		ArgumentType at1 = null;
+		Object a1 = null;
+		
+		ArgumentType at2 = null;
+		Object a2 = null;
+		
+		if (simplified.substring(0, 3).equals("exp")) {
+			at1 = ArgumentType.operationReference;
+			a1 = ops.get(0);
+		} else if (simplified.charAt(0) == 'C' || simplified.charAt(0) == 'c') {
+			at1 = ArgumentType.cReference;
+		} else if (simplified.charAt(0) == 'Z' || simplified.charAt(0) == 'z') {
+			at1 = ArgumentType.zReference;
+		}
+		
+		if (simplified.substring(length-4, length-1).equals("exp")) {
+			at2 = ArgumentType.operationReference;
+			a2 = ops.get(ops.size()-1);
+		} else if (simplified.charAt(length-1) == 'C' || simplified.charAt(length-1) == 'c') {
+			at2 = ArgumentType.cReference;
+		} else if (simplified.charAt(length-1) == 'Z' || simplified.charAt(length-1) == 'z') {
+			at1 = ArgumentType.zReference;
+		}
+		
+		Operation op = new Operation (ot, at1, a1, at2, a2);
+		
+		return op;
 	}
 	
 	private static void syntaxException (String charRef) {
