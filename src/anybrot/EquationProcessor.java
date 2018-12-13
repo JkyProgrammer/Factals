@@ -43,15 +43,35 @@ public class EquationProcessor {
 		
 		int exp = 0;
 		while (openBracks > 0) {
-			String sub = simplified.substring(simplified.indexOf("("), simplified.indexOf("("));
-			simplified.replaceFirst(sub, "exp"+exp);
-			ops.add (decode (sub));
+			String sub = simplified.substring(simplified.indexOf("("), simplified.indexOf(")")+1);
+			simplified = simplified.replace(sub, "exp"+exp);
+			ops.add (decode (sub.replaceAll("\\(", "").replaceAll("\\)", "")));
 			openBracks = countOccurrences (simplified, '(');
 			closeBracks = countOccurrences (simplified, ')');
 		}
 		
 		// What's left has no brackets
-		// Each bracketed expression has been processed and is represented in the ops array
+		OperationType ot = OperationType.add;
+		int opTypeLoc = 1;
+		if (simplified.substring(0, 3).equals("exp")) opTypeLoc = 4;
+		switch (simplified.charAt(opTypeLoc)) {
+		case '^':
+			ot = OperationType.exponent;
+			break;
+		case '*':
+			ot = OperationType.multiply;
+			break;
+		case '/':
+			ot = OperationType.divide;
+			break;
+		case '-':
+			ot = OperationType.subtract;
+			break;
+		default:
+			System.out.println("Oh. Well that shouldn't be possible.");	
+			break;
+		}
+		
 		// HERE
 		
 		return null;

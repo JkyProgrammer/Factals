@@ -108,6 +108,8 @@ public class Anybrot {
 	
 	public static void main(String[] args) {
 		runNormal();
+		EquationProcessor ep = new EquationProcessor ();
+		System.out.println(ep.generateFunction("(Z^2) + C"));
 	}
 	
 	public static void runNormal () {
