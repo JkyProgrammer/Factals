@@ -87,6 +87,11 @@ public class EquationProcessor {
 			at1 = ArgumentType.cReference;
 		} else if (simplified.charAt(0) == 'Z' || simplified.charAt(0) == 'z') {
 			at1 = ArgumentType.zReference;
+		} else {
+			Double d = Double.parseDouble (simplified.substring(0, opTypeLoc));
+			Complex c = new Complex (d);
+			at1 = ArgumentType.complex;
+			a1 = c;
 		}
 		
 		if (simplified.substring(length-4, length-1).equals("exp")) {
@@ -96,6 +101,11 @@ public class EquationProcessor {
 			at2 = ArgumentType.cReference;
 		} else if (simplified.charAt(length-1) == 'Z' || simplified.charAt(length-1) == 'z') {
 			at1 = ArgumentType.zReference;
+		} else {
+			Double d = Double.parseDouble (simplified.substring(0, opTypeLoc));
+			Complex c = new Complex (d);
+			at2 = ArgumentType.complex;
+			a2 = c;
 		}
 		
 		Operation op = new Operation (ot, at1, a1, at2, a2);
