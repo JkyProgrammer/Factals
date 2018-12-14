@@ -27,14 +27,11 @@ public class Anybrot {
 	// Equations:
 	// Z = (Z^2) + c              Mandelbrot
 	public int mandelbrot (Complex c, int maxIterations) {
-		Operation op = EquationProcessor.generateFunction("(Z^2) + C");
-		
 		Complex z = c;
 		for (int its = 0; its < maxIterations; its++) {
 			if (z.abs() > 2.0) return its;
 			//Complex tmp = z.pow(power-1);
-			//z = z.pow(2).add(c);
-			z = op.evaluate(z, c);
+			z = z.pow(2).add(c);
 		}
 		return maxIterations;
 	}
@@ -112,6 +109,8 @@ public class Anybrot {
 	public static void main(String[] args) {
 		runNormal();
 	}
+	
+	Operation operation = EquationProcessor.generateFunction("(Z^2) + C");
 	
 	public static void runNormal () {
 		float xPos = 0.0f;
@@ -428,6 +427,9 @@ public class Anybrot {
 	private JTextField powerField;
 	private JComboBox<String> palletSelector;
 	private JTextField tf3;
+	
+	private JComboBox<String> equationSelector;
+	private JTextField equationField;
 	
 	public void prepare () {
 		colours = new ArrayList<Color> ();

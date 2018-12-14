@@ -37,7 +37,7 @@ public class Operation {
 			a1C = cFeed;
 		}
 		
-		Complex a2C = a1Complex;
+		Complex a2C = a2Complex;
 		if (a2Type == ArgumentType.operationReference) {
 			a2C = a2Operation.evaluate(zFeed, cFeed);
 		} else if (a2Type == ArgumentType.zReference) {

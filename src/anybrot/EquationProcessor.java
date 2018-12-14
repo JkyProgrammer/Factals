@@ -67,6 +67,9 @@ public class EquationProcessor {
 		case '-':
 			ot = OperationType.subtract;
 			break;
+		case '+':
+			ot = OperationType.add;
+			break;
 		default:
 			System.out.println("Oh. Well that shouldn't be possible.");	
 			break;
@@ -94,7 +97,7 @@ public class EquationProcessor {
 			a1 = c;
 		}
 		
-		if (simplified.substring(length-4, length-1).equals("exp")) {
+		if (simplified.contains("exp") && simplified.substring(length-4, length-1).equals("exp")) {
 			at2 = ArgumentType.operationReference;
 			a2 = ops.get(ops.size()-1);
 		} else if (simplified.charAt(length-1) == 'C' || simplified.charAt(length-1) == 'c') {
@@ -102,7 +105,7 @@ public class EquationProcessor {
 		} else if (simplified.charAt(length-1) == 'Z' || simplified.charAt(length-1) == 'z') {
 			at1 = ArgumentType.zReference;
 		} else {
-			Double d = Double.parseDouble (simplified.substring(0, opTypeLoc));
+			Double d = Double.parseDouble (simplified.substring(opTypeLoc+1, length));
 			Complex c = new Complex (d);
 			at2 = ArgumentType.complex;
 			a2 = c;
