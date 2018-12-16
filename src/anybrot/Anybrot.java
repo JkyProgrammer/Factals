@@ -10,10 +10,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+import javax.imageio.stream.FileImageOutputStream;
+import javax.imageio.stream.ImageOutputStream;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -25,94 +28,31 @@ import javax.swing.JTextField;
 import org.apache.commons.math3.complex.Complex;
 
 public class Anybrot {
-
-	// Equations:
-	// Z = (Z^2) + c              Mandelbrot
-	public int mandelbrot (Complex c, int maxIterations) {
-		Complex z = c;
-		for (int its = 0; its < maxIterations; its++) {
-			if (z.abs() > 2.0) return its;
-			//Complex tmp = z.pow(power-1);
-			z = z.pow(2).add(c);
-		}
-		return maxIterations;
-	}
-	
-   // X = (X^2) - (Y^2) + CX, Y = 2XY + CY Julia
-   public int julia (double cx, double cy, int maxIterations) {
-      double x = cx;
-      double y = cy;
-      for (int its = 0; its < maxIterations; its++) {
-			if (Math.pow (x, 2) + Math.pow (y, 2) > 4.0) return its;
-			x = Math.pow (x, 2) - Math.pow (y, 2) + cx;
-			y = (2 * x * y) + cy;
-		}
-      return maxIterations;
-   }
-   
-   // Z = (Z^d) + k  Julia 2
-	public int julia2 (Complex c, int maxIterations) {
-		Complex z = c;
-		for (int its = 0; its < maxIterations; its++) {
-			if (z.abs() > 2.0) return its;
-			double k = -0.1948;
-			z = z.pow(power).add(k);
-		}
-		return maxIterations;
-	}
-	
-	// Z = (Z^d) + c              Multibrot
-	public int multibrot (Complex c, int maxIterations) {
-		Complex z = c;
-		for (int its = 0; its < maxIterations; its++) {
-			if (z.abs() > 2.0) return its;
-			z = z.pow(power).add(c);
-		}
-		return maxIterations;
-	}
-	
-	// Z = (Z^Z) + c              Z Power
-		public int zPower (Complex c, int maxIterations) {
-			Complex z = c;
-			for (int its = 0; its < maxIterations; its++) {
-				if (z.abs() > 2.0) return its;
-				z = z.pow(z).add(c);
-			}
-			return maxIterations;
-		}
-	
-	// Z = (Z^d) - (Z^(d-1)) + c  Power Difference
-	public int powerDifference (Complex c, int maxIterations) {
-		Complex z = c;
-		for (int its = 0; its < maxIterations; its++) {
-			if (z.abs() > 2.0) return its;
-			Complex tmp = z.pow(power-1);
-			z = z.pow(power).subtract (tmp).add(c);
-		}
-		return maxIterations;
-	}
-	
-	// Z = (Z^2) - (Z^(1/2))      Inverse Power
-	public int inversePower (Complex c, int maxIterations) {
-		Complex z = c;
-		for (int its = 0; its < maxIterations; its++) {
-			if (z.abs() > 2.0) return its;
-			z = z.pow(2).subtract (z.pow(0.5));
-		}
-		return maxIterations;
-	}
-	
 	public int runSet (double x, double y, int maxIterations) {
 		Complex c = new Complex (x, y);
-		return mandelbrot (c, maxIterations);
+		switch (equationMode) {
+		case CUSTOM:
+			return Equations.custom(c, maxIterations, operation);
+		case MANDELBROT:
+			return Equations.mandelbrot (c, maxIterations);
+		case MULTIBROT:
+			return Equations.multibrot (c, maxIterations, power);
+		case RECIPROCALPOWER:
+			return Equations.reciprocalPower(c, maxIterations, power);
+		case ZPOWER:
+			return Equations.zPower(c, maxIterations);
+		case POWERDIFFERENCE:
+			return Equations.powerDifference(c, maxIterations, power);
+		}
+		return 0;
 	}
 	
 	
 	public static void main(String[] args) {
+		runZoomDemo3();
+		
 		runNormal();
 	}
-	
-	Operation operation = EquationProcessor.generateFunction("(Z^2) + C");
 	
 	public static void runNormal () {
 		float xPos = 0.0f;
@@ -127,6 +67,61 @@ public class Anybrot {
 //		sgf.setPower (-5);
 //		sgf.calculate();
 //		sgf.save("High calc");
+	}
+	
+	public static void runZoomDemo3() {
+		Anybrot sgf = new Anybrot (1024, 800, 0.65771735f, -1.2012954f, 0.2f, true);
+		sgf.prepare();
+		sgf.setPower (-2.10f);
+		sgf.setEquationMode(Equation.RECIPROCALPOWER);
+		sgf.setColourPallet(ColourPallet.greenToYellow);
+		sgf.setColourGraduations(100);
+		
+		try {
+			ImageOutputStream output = new FileImageOutputStream(new File("Images/Reciprocal Zoom Gif.gif"));
+			GifSequenceWriter writer = new GifSequenceWriter(output, sgf.i.getType(), 50, false);
+			for (float z = 0.2f; z <= 50000; z += z/10) {
+				System.out.println("Beginning analysis of zoom value " + z);
+				sgf.setZoom(z);
+				sgf.calculate();
+				writer.writeToSequence(sgf.i);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void runPowerDemo3 () {
+		Anybrot sgf = new Anybrot (256, 200, 0, 0, 0.2f, false);
+		sgf.prepare();
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		sgf.setEquationMode(Equation.RECIPROCALPOWER);
+		sgf.setColourPallet(ColourPallet.greenToYellow);
+		sgf.setColourGraduations(20);
+		int num = 0;
+		ImageOutputStream output;
+		try {
+			output = new FileImageOutputStream(new File("Power Scroll 3/Combined Gif.gif"));
+			GifSequenceWriter writer = new GifSequenceWriter(output, sgf.i.getType(), 20, false);
+			for (float p = -8.0f; p <= 8.0; p += 0.02) {
+				System.out.println("Beginning analysis of power value " + p + ", at position: " + 0.0 + ", " + 0.0);
+				sgf.setPower (p);
+				sgf.calculate();
+				//sgf.save("Power Scroll 3/Power " + num);
+				writer.writeToSequence(sgf.i);
+				num++;
+			}
+			writer.close();
+			output.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void runPowerDemo () {
@@ -194,27 +189,93 @@ public class Anybrot {
 	private BufferedImage i;
 	private boolean shouldBeVisual;
 	private int colourGraduationDetail = 50;
+	private Equation equationMode;
+	Operation operation = EquationProcessor.generateFunction("(Z^2) + C");
 	
 	public void setPosition (float newXPos, float newYPos) {
 		xPos = newXPos;
 		yPos = newYPos;
-     xField.setText("" + xPos);
-     yField.setText("" + yPos);
+		if (shouldBeVisual) {
+			xField.setText("" + xPos);
+			yField.setText("" + yPos);
+		}
 	}
 	
 	public void setZoom (float newZoom) {
 		zoom = newZoom;
-      tf1.setText("" + zoom);
+		if (shouldBeVisual) {
+			tf1.setText("" + zoom);
+		}
 	}
 	
 	public void setPower (float newPower) {
 		power = newPower;
-      powerField.setText("" + power);
+		if (shouldBeVisual) {
+			powerField.setText("" + power);
+		}
 	}
 	
 	public void setMaxIterations (int newMaxIterations) {
 		maxIterations = newMaxIterations;
-      tf2.setText("" + maxIterations);
+		if (shouldBeVisual) {
+			tf2.setText("" + maxIterations);
+		}
+	}
+	
+	public void setColourPallet (int cp) {
+		selectedPallet = cp;
+		if (shouldBeVisual) {
+			palletSelector.setSelectedIndex(selectedPallet);
+		}
+	}
+	
+	public void setEquationMode (Equation e) {
+		setEquationMode (e, null);
+	}
+	
+	public void setColourGraduations (int g) {
+		colourGraduationDetail = g;
+		if (shouldBeVisual) {
+			tf3.setText("" + colourGraduationDetail);
+		}
+		colourSetup();
+	}
+	
+	public void setEquationMode (Equation e, Operation customEquation) {
+		equationMode = e;
+		if (shouldBeVisual) {
+			switch (e) {
+			case MANDELBROT:
+				equationField.setEnabled(false);
+				powerField.setEnabled (false);
+				break;
+			case MULTIBROT:
+				equationField.setEnabled(false);
+				powerField.setEnabled (true);
+				break;
+			case RECIPROCALPOWER:
+				equationField.setEnabled(false);
+				powerField.setEnabled (true);
+				break;
+			case ZPOWER:
+				equationField.setEnabled(false);
+				powerField.setEnabled (false);
+				break;
+			case POWERDIFFERENCE:
+				equationField.setEnabled(false);
+				powerField.setEnabled (true);
+				break;
+			case CUSTOM:
+				equationField.setEnabled(true);
+				powerField.setEnabled (false);
+				break;
+			default:
+				System.out.println("Oh."); // WHAT?????????
+			}
+		}
+		if (e == Equation.CUSTOM) {
+			operation = customEquation;
+		}
 	}
 	
 	public void save (String name) {
@@ -264,7 +325,7 @@ public class Anybrot {
 		}
 	}
 	
-	private int selectedPallet = ColourPallet.blueToWhite;
+	private int selectedPallet = ColourPallet.greenToYellow;
 	private ArrayList<Color> colours;
 	private Color getColour (float initialMapping) {
 		float g = initialMapping * maxIterations;
@@ -286,9 +347,8 @@ public class Anybrot {
 			handles.add(new Color (135, 24, 157));
 			handles.add(new Color (0, 171, 132));
 		} else if (selectedPallet == ColourPallet.greyScale) {
-			handles.add(new Color (0, 0, 0));
-			
 			handles.add(new Color (255, 255, 255));
+			handles.add(new Color (0, 0, 0));
 		} else if (selectedPallet == ColourPallet.blueToWhite) {
 			handles.add(new Color (0, 125, 255));
 			handles.add(new Color (0, 0, 255));
@@ -445,13 +505,12 @@ public class Anybrot {
 	private JTextField powerField;
 	private JComboBox<String> palletSelector;
 	private JTextField tf3;
-	
 	private JComboBox<String> equationSelector;
 	private JTextField equationField;
 	
 	private void setupControlGUI () {
 		JFrame controlFrame = new JFrame ("Control Frame");
-		controlFrame.setLayout(new GridLayout (14, 1));
+		controlFrame.setLayout(new GridLayout (16, 1));
 		controlFrame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
 		JLabel l1 = new JLabel ("Zoom Value");
 		tf1 = new JTextField ();
@@ -499,15 +558,16 @@ public class Anybrot {
 		JLabel l7 = new JLabel ("Custom Equation Z = ");
 		equationField = new JTextField ("(Z^2) + C");
 		JPanel pan2 = new JPanel ();
-		pan.setLayout(new GridLayout (1, 2));
-		pan.add(l7);
-		pan.add(equationField);
+		pan2.setLayout(new GridLayout (1, 2));
+		pan2.add(l7);
+		pan2.add(equationField);
 		
 		
 		equationSelector = new JComboBox<String> ();
-		equationSelector.addItem("Mandlebrot Set");
+		equationSelector.addItem("Mandelbrot Set");
 		equationSelector.addItem("Multibrot Base");
-		equationSelector.addItem("Inverse Power Set");
+		equationSelector.addItem("Reciprocal Power Base");
+		equationSelector.addItem("Z Power Set");
 		equationSelector.addItem("Power Difference Base");
 		equationSelector.addItem("Custom");
 		
@@ -516,14 +576,47 @@ public class Anybrot {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					switch ((String)e.getItem()) {
-					// WIP
 					case "Mandelbrot Set":
 						equationField.setEnabled(false);
+						powerField.setEnabled (false);
+						equationMode = Equation.MANDELBROT;
 						break;
+					case "Multibrot Base":
+						equationField.setEnabled(false);
+						powerField.setEnabled (true);
+						equationMode = Equation.MULTIBROT;
+						break;
+					case "Reciprocal Power Base":
+						equationField.setEnabled(false);
+						powerField.setEnabled (true);
+						equationMode = Equation.RECIPROCALPOWER;
+						break;
+					case "Z Power Set":
+						equationField.setEnabled(false);
+						powerField.setEnabled (false);
+						equationMode = Equation.ZPOWER;
+						break;
+					case "Power Difference Base":
+						equationField.setEnabled(false);
+						powerField.setEnabled (true);
+						equationMode = Equation.POWERDIFFERENCE;
+						break;
+					case "Custom":
+						equationField.setEnabled(true);
+						powerField.setEnabled (false);
+						equationMode = Equation.CUSTOM;
+						break;
+					default:
+						System.out.println("Oh."); // WHAT?????????
 					}
 				}
 			}
 		});
+		
+		equationSelector.setSelectedIndex(0);
+		equationField.setEnabled(false);
+		powerField.setEnabled (false);
+		equationMode = Equation.MANDELBROT;
 		
 		
 		JButton b1 = new JButton ("Redraw image");
@@ -537,6 +630,9 @@ public class Anybrot {
 					yPos = Float.parseFloat(yField.getText());
 					power = Float.parseFloat(powerField.getText());
 					colourGraduationDetail = Integer.parseInt(tf3.getText());
+					if (equationMode == Equation.CUSTOM) {
+						operation = EquationProcessor.generateFunction(equationField.getText());
+					}
 					Thread t = new Thread (new Runnable () {
 						@Override
 						public void run() {
@@ -557,7 +653,6 @@ public class Anybrot {
 				save ("Image Latest");
 			}
 		});
-		
 		
 		controlFrame.add(l1);
 		controlFrame.add(tf1);
@@ -583,7 +678,7 @@ public class Anybrot {
 		controlFrame.add(b1);
 		controlFrame.add(b2);
 		
-		controlFrame.setSize(400, 300);
+		controlFrame.setSize(300, 400);
 		controlFrame.setVisible(true);
 	}
 }

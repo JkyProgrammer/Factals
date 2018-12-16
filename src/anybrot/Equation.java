@@ -1,0 +1,10 @@
+package anybrot;
+
+public enum Equation {
+	MANDELBROT,
+	MULTIBROT,
+	RECIPROCALPOWER,
+	ZPOWER,
+	POWERDIFFERENCE,
+	CUSTOM;
+}
