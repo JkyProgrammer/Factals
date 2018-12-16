@@ -49,24 +49,23 @@ public class Anybrot {
 	
 	
 	public static void main(String[] args) {
-		runZoomDemo3();
-		
 		runNormal();
 	}
 	
 	public static void runNormal () {
 		float xPos = 0.0f;
 		float yPos = 0.0f;
-		Anybrot sgf = new Anybrot (1024, 100, xPos, yPos, 0.3f, true);
-		sgf.setPower(2.0f);
-		sgf.prepare();
+//		Anybrot sgf = new Anybrot (1024, 100, xPos, yPos, 0.3f, true);
+//		sgf.setPower(2.0f);
+//		sgf.prepare();
 		//sgf.calculate();
 		
-//		Anybrot sgf = new Anybrot (4096, 512, 1.0353411f, 0.10399851f, 6000f, true);
-//		sgf.prepare();
-//		sgf.setPower (-5);
-//		sgf.calculate();
-//		sgf.save("High calc");
+		Anybrot sgf = new Anybrot (8192*2, 4000, 0.0f, 0.0f, 0.2f, true);
+		sgf.prepare();
+		sgf.setPower (-2.1f);
+		sgf.setEquationMode(Equation.RECIPROCALPOWER);
+		sgf.calculate();
+		sgf.save("High calc");
 	}
 	
 	public static void runZoomDemo3() {
@@ -102,7 +101,6 @@ public class Anybrot {
 		sgf.setEquationMode(Equation.RECIPROCALPOWER);
 		sgf.setColourPallet(ColourPallet.greenToYellow);
 		sgf.setColourGraduations(20);
-		int num = 0;
 		ImageOutputStream output;
 		try {
 			output = new FileImageOutputStream(new File("Power Scroll 3/Combined Gif.gif"));
@@ -113,7 +111,6 @@ public class Anybrot {
 				sgf.calculate();
 				//sgf.save("Power Scroll 3/Power " + num);
 				writer.writeToSequence(sgf.i);
-				num++;
 			}
 			writer.close();
 			output.close();
