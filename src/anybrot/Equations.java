@@ -67,13 +67,25 @@ public class Equations {
 		return maxIterations;
 	}
 
-	// Z = (Z^d) - (Z^(1/d))      Reciprocal Power
-	public static int reciprocalPower (Complex c, int maxIterations, float power) {
-		Complex z = c;
-		for (int its = 0; its < maxIterations; its++) {
-			if (z.abs() > 2.0) return its;
-			z = z.pow(power).subtract (z.pow(1/power));
+	// Z = (Z^Z) + C              Z Power
+		public static int zRecPower (Complex c, int maxIterations) {
+			Complex z = c;
+			Complex one = new Complex (1);
+			for (int its = 0; its < maxIterations; its++) {
+				if (z.abs() > 2.0) return its;
+				z = z.pow(one.divide(z)).add(c);
+			}
+			return maxIterations;
 		}
-		return maxIterations;
-	}
+	
+
+	// Z = (Z^d) - (Z^(1/d))      Reciprocal Power
+		public static int reciprocalPower (Complex c, int maxIterations, float power) {
+			Complex z = c;
+			for (int its = 0; its < maxIterations; its++) {
+				if (z.abs() > 2.0) return its;
+				z = z.pow(power).subtract (z.pow(1/power));
+			}
+			return maxIterations;
+		}
 }

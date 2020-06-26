@@ -43,6 +43,8 @@ public class Anybrot {
 			return Equations.zPower(c, maxIterations);
 		case POWERDIFFERENCE:
 			return Equations.powerDifference(c, maxIterations, power);
+		case ZRECPOWER:
+			return Equations.zRecPower(c, maxIterations);
 		}
 		return 0;
 	}
@@ -60,12 +62,12 @@ public class Anybrot {
 //		sgf.prepare();
 		//sgf.calculate();
 		
-		Anybrot sgf = new Anybrot (8192*2, 4000, 0.0f, 0.0f, 0.2f, true);
+		Anybrot sgf = new Anybrot (1024, 4000, 0.0f, 0.0f, 0.2f, true);
 		sgf.prepare();
-		sgf.setPower (-2.1f);
-		sgf.setEquationMode(Equation.RECIPROCALPOWER);
-		sgf.calculate();
-		sgf.save("High calc");
+		//sgf.setPower (-2.1f);
+		//sgf.setEquationMode(Equation.RECIPROCALPOWER);
+		//sgf.calculate();
+		//sgf.save("High calc");
 	}
 	
 	public static void runZoomDemo3() {
@@ -261,6 +263,10 @@ public class Anybrot {
 			case POWERDIFFERENCE:
 				equationField.setEnabled(false);
 				powerField.setEnabled (true);
+				break;
+			case ZRECPOWER:
+				equationField.setEnabled(false);
+				powerField.setEnabled (false);
 				break;
 			case CUSTOM:
 				equationField.setEnabled(true);
@@ -566,6 +572,7 @@ public class Anybrot {
 		equationSelector.addItem("Reciprocal Power Base");
 		equationSelector.addItem("Z Power Set");
 		equationSelector.addItem("Power Difference Base");
+		equationSelector.addItem("Z Reciprocal Power Set");
 		equationSelector.addItem("Custom");
 		
 		equationSelector.addItemListener(new ItemListener () {
@@ -597,6 +604,11 @@ public class Anybrot {
 						equationField.setEnabled(false);
 						powerField.setEnabled (true);
 						equationMode = Equation.POWERDIFFERENCE;
+						break;
+					case "Z Reciprocal Power Set":
+						equationField.setEnabled(false);
+						powerField.setEnabled (false);
+						equationMode = Equation.ZRECPOWER;
 						break;
 					case "Custom":
 						equationField.setEnabled(true);

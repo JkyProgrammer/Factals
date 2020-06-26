@@ -6,5 +6,6 @@ public enum Equation {
 	RECIPROCALPOWER,
 	ZPOWER,
 	POWERDIFFERENCE,
+	ZRECPOWER,
 	CUSTOM;
 }
