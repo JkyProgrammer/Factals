@@ -10,7 +10,7 @@ import org.apache.commons.math3.complex.Complex;
 public class EquationProcessor {
 	public static Operation generateFunction (String raw) {
 		String simplified = raw.replaceAll(" ", "");
-		ArrayList<Character> valids = new ArrayList<Character> (Arrays.asList('Z', 'z', 'C', 'c', '^', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '(', ')', '*', '/', '.'));
+		ArrayList<Character> valids = new ArrayList<Character> (Arrays.asList('Z', 'z', 'C', 'c', '^', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '(', ')', '*', '/', '.', 'i'));
 		
 		// Verify the input for invalid characters
 		for (char chr : simplified.toCharArray()) {
@@ -54,6 +54,7 @@ public class EquationProcessor {
 		OperationType ot = OperationType.add;
 		int opTypeLoc = 1;
 		if (simplified.substring(0, 3).equals("exp")) opTypeLoc = 4;
+		while (simplified.charAt(opTypeLoc) != '+' && simplified.charAt(opTypeLoc) != '-' && simplified.charAt(opTypeLoc) != '*' && simplified.charAt(opTypeLoc) != '/' && simplified.charAt(opTypeLoc) != '^') opTypeLoc++;
 		switch (simplified.charAt(opTypeLoc)) {
 		case '^':
 			ot = OperationType.exponent;
@@ -90,6 +91,11 @@ public class EquationProcessor {
 			at1 = ArgumentType.cReference;
 		} else if (simplified.charAt(0) == 'Z' || simplified.charAt(0) == 'z') {
 			at1 = ArgumentType.zReference;
+		} else if (simplified.charAt(opTypeLoc-1) == 'i') {
+			Double d = Double.parseDouble (simplified.substring(0, opTypeLoc-1));
+			Complex c = new Complex (0, d);
+			at1 = ArgumentType.complex;
+			a1 = c;
 		} else {
 			Double d = Double.parseDouble (simplified.substring(0, opTypeLoc));
 			Complex c = new Complex (d);
@@ -103,7 +109,12 @@ public class EquationProcessor {
 		} else if (simplified.charAt(length-1) == 'C' || simplified.charAt(length-1) == 'c') {
 			at2 = ArgumentType.cReference;
 		} else if (simplified.charAt(length-1) == 'Z' || simplified.charAt(length-1) == 'z') {
-			at1 = ArgumentType.zReference;
+			at2 = ArgumentType.zReference;
+		} else if (simplified.charAt(length-1) == 'i') {
+			Double d = Double.parseDouble (simplified.substring(opTypeLoc+1, length-1));
+			Complex c = new Complex (0, d);
+			at2 = ArgumentType.complex;
+			a2 = c;
 		} else {
 			Double d = Double.parseDouble (simplified.substring(opTypeLoc+1, length));
 			Complex c = new Complex (d);
