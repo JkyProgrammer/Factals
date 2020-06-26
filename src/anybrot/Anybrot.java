@@ -24,6 +24,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.colorchooser.ColorSelectionModel;
 
 import org.apache.commons.math3.complex.Complex;
 
@@ -62,11 +63,11 @@ public class Anybrot {
 //		sgf.prepare();
 		//sgf.calculate();
 		
-		Anybrot sgf = new Anybrot (1024, 4000, 0.0f, 0.0f, 0.2f, true);
+		Anybrot sgf = new Anybrot (1024, 400, 0.0f, 0.0f, 0.3f, true);
 		sgf.prepare();
 		//sgf.setPower (-2.1f);
 		//sgf.setEquationMode(Equation.RECIPROCALPOWER);
-		//sgf.calculate();
+		sgf.calculate();
 		//sgf.save("High calc");
 	}
 	
@@ -331,8 +332,9 @@ public class Anybrot {
 	private int selectedPallet = ColourPallet.greenToYellow;
 	private ArrayList<Color> colours;
 	private Color getColour (float initialMapping) {
-		float g = initialMapping * maxIterations;
+		if (colours.isEmpty()) return new Color (0,0,0);
 		if (initialMapping != 0.0) {
+			float g = initialMapping * maxIterations;
 			int m = (int)(g-0.5);
 			m = m % colours.size();
 			return colours.get(m);
