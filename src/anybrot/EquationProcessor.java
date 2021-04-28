@@ -43,7 +43,14 @@ public class EquationProcessor {
 		
 		int exp = 0;
 		while (openBracks > 0) {
-			String sub = simplified.substring(simplified.indexOf("("), simplified.indexOf(")")+1);
+			int closeBrackInd = simplified.indexOf("(");
+			int depth = 1;
+			while (depth != 0) {
+				closeBrackInd++;
+				if (simplified.charAt(closeBrackInd) == '(') depth++;
+				if (simplified.charAt(closeBrackInd) == ')') depth--;
+			}
+			String sub = simplified.substring(simplified.indexOf("("), closeBrackInd+1);
 			simplified = simplified.replace(sub, "exp"+exp);
 			ops.add (decode (sub.replaceAll("\\(", "").replaceAll("\\)", "")));
 			openBracks = countOccurrences (simplified, '(');

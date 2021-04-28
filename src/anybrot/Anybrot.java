@@ -22,6 +22,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.colorchooser.ColorSelectionModel;
@@ -62,8 +63,9 @@ public class Anybrot {
 //		sgf.setPower(2.0f);
 //		sgf.prepare();
 		//sgf.calculate();
-		
-		Anybrot sgf = new Anybrot (1024, 400, 0.0f, 0.0f, 0.3f, true);
+		int res = -1;
+		while (res < 1) try {res = Integer.parseInt(JOptionPane.showInputDialog("Enter image frame size:"));} catch (Exception e) { res=-1; };
+		Anybrot sgf = new Anybrot (res, 400, 0.0f, 0.0f, 0.3f, true);
 		sgf.prepare();
 		//sgf.setPower (-2.1f);
 		//sgf.setEquationMode(Equation.RECIPROCALPOWER);
